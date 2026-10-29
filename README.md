@@ -1,4 +1,4 @@
-# virtual-casino-client
+# neiroslop-client
 
 Клиентская часть учебного проекта «Виртуальное казино — NEIROSLOP BURMALDA». Браузерное приложение построено на React и Vite и работает с виртуальными монетами без денежных платежей.
 
@@ -10,7 +10,7 @@
 
 ```mermaid
 flowchart LR
-    Client[React-клиент] <-->|HTTP / JSON| API[virtual-casino-server]
+    Client[React-клиент] <-->|HTTP / JSON| API[neiroslop-server]
     API <--> DB[(PostgreSQL)]
 ```
 
@@ -20,12 +20,12 @@ flowchart LR
 
 ## Связанные компоненты
 
-- [virtual-casino-server](https://github.com/dashkalikov/virtual-casino-server) — API, игровые правила и операции с балансом.
-- [virtual-casino-database](https://github.com/dashkalikov/virtual-casino-database) — описание данных и средства для PostgreSQL.
+- [neiroslop-server](https://github.com/dashkalikov/neiroslop-server) — API, игровые правила и операции с балансом.
+- [neiroslop-database](https://github.com/dashkalikov/neiroslop-database) — описание данных и средства для PostgreSQL.
 
 ## Совместная работа
 
-Изменения предлагаются через pull request из рабочих веток в `main`. Целевые правила требуют одобрения другого участника, повторного одобрения после новых коммитов и закрытия обсуждений. Прямые push в `main`, force push и удаление ветки должны быть запрещены для всех участников, включая администраторов. Правила применяются в настройках GitHub.
+Участники предлагают изменения через pull request из рабочих веток в `main`. Для них требуется одобрение другого участника, повторное одобрение после новых коммитов и закрытие обсуждений; прямые push в `main`, force push и удаление ветки запрещены. Владелец личного репозитория может обходить защиту, напрямую отправлять изменения в `main` и сливать pull request без чужого одобрения. Правила применяются в настройках GitHub.
 
 CI/CD будет добавлен отдельным этапом.
 
