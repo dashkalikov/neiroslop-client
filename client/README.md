@@ -1,4 +1,4 @@
-# virtual-casino-client
+# neiroslop-client
 
 Клиентская часть учебного проекта «Виртуальное казино — NEIROSLOP BURMALDA». Браузерное приложение построено на React и Vite и работает с виртуальными монетами без денежных платежей.
 
@@ -10,7 +10,7 @@
 
 ```mermaid
 flowchart LR
-    Client[React-клиент] <-->|HTTP / JSON| API[virtual-casino-server]
+    Client[React-клиент] <-->|HTTP / JSON| API[neiroslop-server]
     API <--> DB[(PostgreSQL)]
 ```
 
@@ -20,8 +20,8 @@ flowchart LR
 
 ## Связанные компоненты
 
-- [virtual-casino-server](https://github.com/dashkalikov/virtual-casino-server) — API, игровые правила и операции с балансом.
-- [virtual-casino-database](https://github.com/dashkalikov/virtual-casino-database) — описание данных и средства для PostgreSQL.
+- [neiroslop-server](https://github.com/dashkalikov/neiroslop-server) — API, игровые правила и операции с балансом.
+- [neiroslop-database](https://github.com/dashkalikov/neiroslop-database) — описание данных и средства для PostgreSQL.
 
 ## Совместная работа
 
@@ -29,4 +29,4 @@ flowchart LR
 
 CI/CD будет добавлен отдельным этапом.
 
-Общий обзор проекта: [архитектура](docs/architecture.ru.md).
+Общий обзор проекта: [архитектура](../docs/architecture.ru.md).
