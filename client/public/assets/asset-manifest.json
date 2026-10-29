@@ -1,0 +1,42 @@
+{
+  "tool": "built-in image_gen",
+  "created": "2026-10-28",
+  "assets": [
+    {
+      "path": "moon-scene.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: premium online slot game key art and immersive background, landscape 16:9. Create a breathtaking richly detailed cinematic 3D fantasy enchanted forest at night. Hero subject an exquisitely faceted amethyst crystal altar surrounded by silver crescent moon jewelry, glowing violet mushrooms, ancient twisted trees, delicate fireflies and magical motes. Large luminous full moon behind misty mountains and fantastical Gothic arches. Purple, midnight blue, subtle silver, glistening translucent crystal materials. Beautiful commercial game promotional illustration, sophisticated glossy Unreal-style rendering, dramatic volumetric moonbeams, polished detailed textures, high contrast subject, fine atmospheric depth. Composition: central/right crystal scene; keep far left third darker for UI text overlay. No lettering, no logos, no watermarks, no slot machine or reels. Full bleed artwork, not a mockup."
+    },
+    {
+      "path": "temple-scene.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: premium online slot game key art and immersive background, landscape 16:9. Create a magnificent cinematic 3D ancient Egyptian treasure chamber opening toward pyramids. Hero subject ornate gilded scarab with glowing emerald gemstone in its center, a golden Eye of Horus engraved on a massive sun medallion, piles of richly detailed coins, turquoise inlay jewelry, polished gold sacred objects. Monumental carved temple columns, weathered hieroglyphs, sunlit dust motes, sunset glow streaming through the ruins. Burnished gold, dark jade, honey amber and turquoise, rich material realism, detailed commercial casino game illustration at AAA quality, strong focal composition, sophisticated glossy rendering. Central/right composition with a dark left side for UI text. No writing, no watermarks, no logo, no game UI or reels. Full bleed image."
+    },
+    {
+      "path": "neon-scene.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: premium online slot game key art and immersive background, landscape 16:9. Create an extraordinary cinematic detailed neon cyberpunk city at midnight after rain. Hero subject beautiful sleek retro-futuristic purple sports car with glowing cyan headlights seen front three-quarter view, electric holographic crystalline lightning emblem hovering above the street, soaring metropolitan towers packed with luminous abstract neon light strips, distant magenta sun. Dark purple, electric hot pink and cyan, reflective rain soaked road, volumetric haze, gorgeous light reflections, detailed metal and glass, commercially polished high-end 3D game concept art, not flat vector art. Composition primary car central/right with darker negative space in left third for UI text. No legible lettering, no logos, no watermarks, no UI or slot reels, no humans. Full bleed landscape."
+    },
+    {
+      "path": "moon-symbols.png",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "prompt": "Use case: stylized-concept. Asset type: game symbol sprite atlas. A single wide transparent PNG atlas in an EXACT 4-column by 2-row grid of 8 equal square cells, no gutters between cells but ample transparent padding around each icon, each icon centered within its own cell, all objects fully contained inside cell, uniform visual scale occupying about 70 percent of cell. Premium richly detailed glossy 3D slot-game symbols, sculpted silhouettes, dramatic highlights and realistic materials. Actual transparent background everywhere outside objects. No letters, no labels, no numerals, no watermark, no grid lines. Strict reading order left to right top to bottom: 1 a faceted luminous amethyst crystal cluster; 2 an ornate silver five-point star with purple gems; 3 a polished silver crescent moon with hanging amethyst charms; 4 a jeweled royal silver crown with purple velvet; 5 a sculpted emerald magical leaf; 6 a glowing violet magical orb surrounded by elaborate silver filigree circle (wild icon); 7 a golden circular medallion with radiant purple star (bonus icon); 8 a tiny silver and amethyst treasure chest. Enchanted moonlit fantasy aesthetic. Studio asset lighting, exquisite detail, not flat vectors. Landscape canvas ratio 2:1."
+    },
+    {
+      "path": "temple-symbols.png",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "prompt": "Use case: stylized-concept. Asset type: game symbol sprite atlas. A single wide transparent PNG atlas in an EXACT 4-column by 2-row grid of 8 equal square cells, no gutters between cells but ample transparent padding around each icon, each icon centered within its own cell, all objects fully contained inside cell, uniform visual scale occupying about 70 percent of cell. Premium richly detailed glossy 3D slot-game symbols, sculpted silhouettes, dramatic highlights and realistic materials. Actual transparent background everywhere outside objects. No letters, no labels, no numerals, no watermark, no grid lines. Strict reading order left to right top to bottom: 1 a brilliant faceted emerald gemstone set in gold; 2 an eight-point embossed golden sun star; 3 a turquoise and gold Eye of Horus amulet; 4 an ornate pharaoh crown in lapis and gold; 5 a golden feather with turquoise inlay; 6 a sacred winged gold scarab with emerald body (wild icon); 7 an embossed golden coin with radiant scarab (bonus icon); 8 a miniature ancient treasure chest. Rich Egyptian theme, polished gold, jade, turquoise and intricate engraved textures. Studio asset lighting, exquisite detail, not flat vectors. Landscape canvas ratio 2:1."
+    },
+    {
+      "path": "neon-symbols.png",
+      "transparent": true,
+      "columns": 4,
+      "rows": 2,
+      "prompt": "Use case: stylized-concept. Asset type: game symbol sprite atlas. A single wide transparent PNG atlas in an EXACT 4-column by 2-row grid of 8 equal square cells, no gutters between cells but ample transparent padding around each icon, each icon centered within its own cell, all objects fully contained inside cell, uniform visual scale occupying about 70 percent of cell. Premium richly detailed glossy 3D slot-game symbols, sculpted silhouettes, dramatic highlights and realistic materials. Actual transparent background everywhere outside objects. No letters, no labels, no numerals, no watermark, no grid lines. Strict reading order left to right top to bottom: 1 a brilliant electric cyan faceted crystal; 2 a chrome five-point star with glowing magenta edges; 3 a sculpted glass lightning bolt lit with hot pink neon; 4 a futuristic black chrome crown with cyan and pink LEDs; 5 a pair of retro futuristic violet sunglasses with teal reflective lenses; 6 a glowing cybernetic violet energy orb in chrome ring (wild icon); 7 a gold and purple neon casino medallion with lightning bolt (bonus icon); 8 a tiny holographic purple sports car. Retrofuturistic cyberpunk theme. Studio asset lighting, exquisite detail, not flat vectors. Landscape canvas ratio 2:1."
+    }
+  ]
+}

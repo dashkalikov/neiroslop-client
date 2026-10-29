@@ -1,0 +1,26 @@
+{
+  "tool": "built-in image_gen",
+  "created": "2026-10-28",
+  "assets": [
+    {
+      "path": "royal-scene.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: detailed slot game key art, full bleed landscape 16:9. A luxurious vintage three-reel mechanical slot machine in a moody black and burgundy Art Deco casino lounge. Main subject center-right: polished brass cabinet with sculpted engraved gold trim, rich ruby red lacquer, softly illuminated ivory reels showing ruby sevens cherries and bells, a long functional chrome lever on the right with glossy red spherical handle, a brass coin payout tray, scattered golden virtual tokens in the foreground. No legible words or branding. Warm dramatic studio lighting, glints on polished metal, subtle dust and atmospheric bokeh, rich velvet drapes and geometric Art Deco architecture in the background. Photorealistic premium stylized 3D game illustration, beautiful fine textures, sophisticated composition. Darker negative space on left for UI text. No people, no watermarks, no website UI."
+    },
+    {
+      "path": "royal-symbols.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: game symbol sprite atlas. A single wide transparent PNG atlas in an EXACT 4-column by 2-row grid of 8 equal square cells. Every symbol centered within its own cell, ample transparent padding, fully contained, about 70 percent of cell, all same apparent scale. Richly detailed glossy sculpted 3D premium slot-game symbols, realistic materials and highlights, clean silhouettes. Actual transparent background outside objects. No grid, no cell borders, no labels or watermark. Strict reading order top left to right then bottom left to right: 1 a sculpted ruby red numeral 7 with beveled gold rim; 2 a polished golden bell; 3 a pair of glossy red cherries with green leaves; 4 a black enamel rectangular plaque with exact gold lettering BAR; 5 a glossy yellow lemon; 6 a red and gold ornate five pointed star (wild icon, no word); 7 a golden circular casino token with a red horseshoe (bonus icon, no word); 8 a cut diamond. Traditional mechanical slot machine aesthetic, red gold ivory, highly polished rich materials. Landscape 2:1."
+    },
+    {
+      "path": "ocean-scene.png",
+      "transparent": false,
+      "prompt": "Use case: stylized-concept. Asset type: premium slot game artwork and backdrop, landscape 16:9. A breathtaking submerged ancient city in an underwater sapphire ocean, huge intricate classical marble temple with luminous turquoise inlay and magnificent golden trident, iridescent giant pearl in an ornate shell altar center-right, a sea turtle gliding in the distance, swaying coral and delicate jellyfish, sunbeams piercing blue water from above, bubbles, drifting particles, gold coins and jewels scattered on seabed. Incredibly detailed commercial 3D fantasy game illustration, sophisticated glossy textures, jade teal turquoise deep blue and pearlescent gold, dramatic cinematic volumetric underwater light. The left third darker for UI copy. No text, no branding, no humans, no watermark, no interface or reels."
+    },
+    {
+      "path": "ocean-symbols.png",
+      "transparent": true,
+      "prompt": "Use case: stylized-concept. Asset type: game symbol sprite atlas. A single wide transparent PNG atlas in an EXACT 4-column by 2-row grid of 8 equal square cells. Every symbol centered within its own cell, ample transparent padding, fully contained, about 70 percent of cell, all same apparent scale. Richly detailed glossy sculpted 3D premium slot-game symbols, realistic materials and highlights, clean silhouettes. Actual transparent background outside objects. No grid, no cell borders, no labels or watermark. Strict reading order top left to right then bottom left to right: 1 a brilliant cyan aquamarine crystal; 2 an ornate gold and coral starfish; 3 a lustrous giant pearl in an iridescent open seashell; 4 a gold underwater royal crown with sapphire gems; 5 a sculpted turquoise sea turtle; 6 a glowing blue gold trident encircled by ocean waves (wild icon, no text); 7 a circular gold treasure medallion featuring a pearl and shell (bonus icon, no text); 8 a jeweled sea treasure chest. Deep sea fantasy theme, sophisticated glossy sapphire teal aquamarine pearl gold materials. Landscape 2:1."
+    }
+  ]
+}

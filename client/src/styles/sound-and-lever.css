@@ -1,0 +1,36 @@
+.global-audio-controls { display:flex; align-items:center; gap:5px; padding:3px 7px 3px 3px; background:var(--soft); border:1px solid var(--border); border-radius:8px; }
+.global-audio-controls .audio-toggle { width:27px; height:27px; display:grid; place-items:center; color:var(--muted); border-radius:5px; }
+.global-audio-controls .audio-toggle[aria-pressed="true"] { color:var(--active-text); background:var(--active); }
+.global-audio-controls .audio-toggle svg { width:16px; height:16px; }
+.volume-control { display:flex; align-items:center; gap:8px; color:var(--muted); }
+.volume-control input { appearance:none; -webkit-appearance:none; width:75px; height:4px; padding:0; border:0; border-radius:5px; cursor:pointer; background:linear-gradient(90deg,#bb99dd var(--volume-fill),var(--border) var(--volume-fill)); }
+.volume-control input::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:12px; height:12px; border-radius:50%; border:2px solid #e6d2f8; background:#b48bd8; box-shadow:0 1px 4px #0003; }
+.volume-control input::-moz-range-thumb { width:10px; height:10px; border-radius:50%; border:2px solid #e6d2f8; background:#b48bd8; }
+.volume-control input:focus-visible { outline:2px solid #c5a8e4; outline-offset:6px; }
+.volume-control output { min-width:30px; text-align:right; font-variant-numeric:tabular-nums; font-size:9px; }
+.settings-sound-section { margin-top:19px; padding-top:17px; border-top:1px solid var(--border); }
+.settings-sound-section .settings-section-heading { margin-bottom:14px; }
+.settings-sound-toggle { display:flex; align-items:center; justify-content:center; gap:7px; padding:8px 12px; border:1px solid var(--border); background:var(--soft); color:var(--muted); border-radius:7px; font-size:10px; min-width:100px; }
+.settings-sound-toggle.active { color:var(--active-text); background:var(--active); border-color:#ad8fca66; }.settings-sound-toggle svg { width:15px; height:15px; }
+.settings-volume { display:grid; grid-template-columns:95px 1fr 40px; gap:12px; padding:12px 14px; background:var(--soft); border:1px solid var(--border); border-radius:8px; }
+.settings-volume>span { font-size:10px; }.settings-volume input { width:100%; }.settings-volume output { font-size:11px; }
+.royal .classic-frame { padding-right:100px; }
+.mechanical-lever.pivot-lever { width:120px; height:510px; top:185px; right:-20px; transform:none; }
+.pivot-lever .pivot-handle { width:120px; height:450px; }
+.pivot-handle svg { width:120px; height:450px; }
+.pivot-lever .lever-upper-label { top:-32px; left:31px; width:58px; font-size:8px; letter-spacing:2px; }
+.pivot-lever .lever-instruction { top:462px; left:20px; width:80px; font-size:8px; line-height:1.8; letter-spacing:1.3px; }
+.pivot-handle:focus-visible { outline:2px solid #f0ce8b; outline-offset:3px; border-radius:34px; }
+.game-stage .reel.stopping .cell.landing-cell { animation:cell-seat .18s var(--cell-land-delay,0ms) ease-out backwards; }
+@keyframes cell-seat { from{transform:translateY(-8px);opacity:.55} 70%{transform:translateY(2px);opacity:1} to{transform:translateY(0);opacity:1} }
+@media(max-width:1150px) {
+  .mechanical-lever.pivot-lever{right:-22px;top:185px;transform:scale(.94);transform-origin:0 0}
+  .global-audio-controls{gap:3px;padding-right:5px}.header-volume input{width:52px}.header-volume{gap:6px}.header-volume output{font-size:8px;min-width:25px}
+}
+@media(max-width:900px) { .header-volume{display:none}.global-audio-controls{padding:2px}.global-audio-controls .audio-toggle{width:25px;height:25px} }
+@media(max-width:650px) {
+  .breadcrumbs{min-width:0;flex:1;overflow:hidden}.breadcrumbs strong{max-width:85px;min-width:0}.header-actions{flex-shrink:0;gap:4px}.global-audio-controls .audio-toggle{width:23px;height:23px}.global-audio-controls .audio-toggle svg{width:14px;height:14px}
+  .settings-sound-section{margin-top:16px;padding-top:15px}.settings-sound-toggle{font-size:9px;min-width:88px;padding:7px 8px}.settings-sound-toggle svg{width:13px;height:13px}.settings-volume{grid-template-columns:78px 1fr 32px;padding:12px 10px;gap:9px}.settings-volume>span{font-size:9px}.settings-volume output{font-size:10px}
+  .royal .classic-frame{padding-right:61px}.mechanical-lever.pivot-lever{top:157px;right:-50px;transform:scale(.6);transform-origin:0 0}.pivot-lever .lever-upper-label{font-size:10px;top:-34px}.pivot-lever .lever-instruction{font-size:9px;top:460px;letter-spacing:.8px}
+}
+@media(prefers-reduced-motion:reduce) { .game-stage .reel.stopping .cell.landing-cell{animation:none!important} }

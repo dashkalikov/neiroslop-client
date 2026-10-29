@@ -1,0 +1,112 @@
+/* Physical cabinet finishes: glass, fluted brass, lamps and recessed hardware. */
+.royal .classic-frame { padding-top:13px; }
+.royal .slot-cabinet { padding:10px 25px 0; border-radius:45px 45px 15px 15px; border:3px solid #f0ce8c;
+  background:repeating-linear-gradient(90deg,#ffffff03 0 1px,transparent 1px 5px),linear-gradient(90deg,#3b2115,#b58b4e 1%,#f7d59c 2%,#6a4029 3%,#3b101c 5%,#641d2d 12%,#2b0b15 50%,#641d2d 88%,#3c151a 95%,#f0cd91 98%,#62401e);
+  box-shadow:0 0 0 2px #4e3119,0 0 0 5px #b59862,0 0 0 7px #25170e,inset 0 0 0 5px #0c060a99,inset 0 0 0 7px #e4b77244,10px 15px 0 -3px #180b11,13px 18px 0 -3px #866039,0 35px 45px #0009; }
+.royal .slot-cabinet:before,.royal .slot-cabinet:after { content:''; position:absolute; top:140px; bottom:35px; width:8px; border-radius:5px; pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent 0 4px,#28150a77 4px 5px),linear-gradient(90deg,#392813,#edc37d,#8c6634,#ffe0a0,#37230e); box-shadow:0 0 0 1px #1a0e07,1px 0 3px #f4d29055; }
+.royal .slot-cabinet:before { left:6px; }.royal .slot-cabinet:after { right:6px; }
+.classic-crown { display:flex; align-items:center; justify-content:center; gap:14px; height:23px; color:#ffe2a0; }
+.classic-crown>span { font-size:24px; text-shadow:0 0 12px #ffd17799; }
+.classic-crown i { height:5px; width:70px; border-top:1px solid #f0c377; border-bottom:1px solid #7c582d; transform:skewX(-35deg); }
+.classic-marquee { margin:4px 0 10px; padding:22px 12px 20px; border:2px solid #e9c480; border-radius:32px 32px 6px 6px;
+  background:linear-gradient(115deg,#ffffff15,transparent 45%,#fff0 60%,#fff1),radial-gradient(ellipse at 50% 100%,#971d35,#4d0e1d 60%,#240a12);
+  box-shadow:0 0 0 2px #312012,inset 0 0 0 4px #38191c,inset 0 0 0 5px #b2844c,0 4px 6px #0007,inset 0 0 30px #0006; }
+.classic-marquee:before { border:1px solid #e4bb7044; inset:9px; border-radius:23px 23px 3px 3px; }
+.classic-marquee>span { font-size:6px; letter-spacing:2.6px; color:#efcda4; }
+.classic-marquee strong { font-size:clamp(24px,3vw,38px); letter-spacing:4px; margin:10px 0 9px; color:#ffe9b8;
+  text-shadow:0 1px #fff5d9,0 3px #a77032,0 5px 2px #260b09,0 0 22px #f6ac5466; }
+.classic-marquee small { font-size:5px; letter-spacing:1.3px; color:#e7bd8e; }
+.marquee-bulbs { position:absolute; inset:-4px; display:flex; justify-content:space-around; align-items:flex-end; pointer-events:none; }
+.marquee-bulbs i { width:5px; height:5px; border-radius:50%; background:#ffe7a5; box-shadow:0 0 5px #ffca5b,0 0 9px #ffc86488; margin-bottom:7px; }
+.has-win .marquee-bulbs i { animation:marquee-chase .7s calc(var(--bulb)*-.07s) ease-in-out infinite alternate; }
+.classic-pay-glass { display:flex; align-items:center; justify-content:center; gap:22px; margin:0 1px 4px; padding:9px 8px; background:linear-gradient(125deg,#fff1,transparent 35%,#ffffff05 65%,#fff1),#181011; border:1px solid #bb955b; border-radius:3px; box-shadow:inset 0 2px 5px #000a; }
+.classic-pay-glass>span { display:flex; align-items:center; gap:8px; }
+.classic-pay-glass .reel-symbol { width:34px; height:34px; flex-shrink:0; }.classic-pay-glass .symbol-caption { display:none; }
+.classic-pay-glass b { font-size:6px; font-weight:600; letter-spacing:1.1px; color:#e8cb9a; }
+.classic-pay-glass small { display:block; color:#f4e5c7; font-size:8px; letter-spacing:1.1px; margin-top:5px; }
+.classic-pay-glass>i { font-size:14px; color:#a68351; font-style:normal; }
+.royal .reel-machine { padding:11px; border-radius:15px; border:2px solid #ffe0a1;
+  background:linear-gradient(110deg,#ffe6af,#be9251 12%,#6e4525 35%,#edd29d 58%,#b3884e 80%,#ffdfa0); box-shadow:0 0 0 2px #39200e,0 0 0 4px #d8ae6455,0 4px 9px #0007,inset 0 0 0 3px #f8dfb466; }
+.royal .reel-machine:after { content:''; position:absolute; inset:12px; z-index:5; pointer-events:none; border-radius:4px;
+  background:linear-gradient(117deg,#ffffff18,transparent 17%,transparent 38%,#ffffff10 39%,transparent 50%,transparent 76%,#ffffff09);
+  box-shadow:inset 0 20px 15px -10px #1e120ca6,inset 0 -20px 15px -10px #1e120ca6; }
+.royal .slot-cabinet .reel { height:306px; border-radius:8px; border:2px solid #5b3e25; background:linear-gradient(#827354,#d5c4a0 8%,#fcf5df 27%,#fffbea 49%,#f9f0d2 73%,#c5b28c 91%,#73633f); box-shadow:inset 5px 0 8px #70533133,inset -5px 0 8px #70533133; }
+.reel-index-rail { display:flex; align-items:center; justify-content:space-around; height:20px; margin:4px 10px 0; color:#d8b47a; font-size:6px; letter-spacing:2px; border-bottom:1px solid #e3b47533; }
+.reel-index-rail b { font-size:7px; font-weight:400; color:#927047; }
+.royal .cabinet-controls { padding:18px 5px 24px; border-radius:5px; background:linear-gradient(0deg,#ffffff05,transparent),linear-gradient(110deg,#1b1010aa,#6b393122,#13090bbb); border-top:1px solid #efcc9655; box-shadow:0 -2px 0 #12090b55; }
+.royal .spin-button { border-radius:10px; min-height:69px; border:2px solid #ffeac1; background:linear-gradient(#fff0c5,#e8bd70 52%,#c5954d); box-shadow:0 5px 0 #8c5928,0 7px 0 #241409,0 9px 10px #0007,inset 0 1px 3px #fff9; }
+.royal .spin-button:active:not(:disabled) { transform:translateY(4px); box-shadow:0 1px 0 #8c5928,0 3px 0 #241409; }
+.royal .bet-stepper { border-color:#ab85516b; background:linear-gradient(#130c10,#30151e); box-shadow:inset 0 2px 5px #0008,0 1px 0 #edca7c33; }
+.royal .bet-stepper button { background:linear-gradient(#b68a59,#60432e); border:1px solid #bd9b68; color:#ffebc6; }
+.classic-apron { height:71px; position:relative; display:flex; align-items:center; justify-content:space-around; gap:12px; margin:0 -7px; border-top:2px solid #bc955a; border-radius:4px 4px 12px 12px; background:linear-gradient(110deg,#b08c58,#e4c98b 5%,#7d5832 8%,#2b1c15 15%,#593521 50%,#291911 85%,#c9a16a 97%,#6e4b2a); box-shadow:inset 0 2px 1px #ffe9b577; }
+.cabinet-speaker { display:grid; gap:3px; width:70px; padding:10px; border:1px solid #aa834d66; border-radius:50%; background:#130e0c; transform:skewX(-8deg); }
+.cabinet-speaker i { height:2px; background:#836343; box-shadow:0 1px #000; border-radius:50%; }
+.serial-plate { text-align:center; color:#302317; padding:8px 15px; border:2px solid #614126; border-radius:3px; background:linear-gradient(110deg,#c7a66c,#f1dcac,#af8950); box-shadow:0 2px 3px #0007,inset 0 0 0 1px #e3c893; }
+.serial-plate strong { font-size:12px; letter-spacing:3px; }.serial-plate span,.serial-plate small { display:block; margin-top:3px; font-size:4px; letter-spacing:1.3px; }
+.token-acceptor { display:grid; grid-template-columns:14px 25px; align-items:center; gap:4px; padding:6px; border:1px solid #bea376; background:linear-gradient(110deg,#8b7b5a,#e0d0aa,#7b6a4a); border-radius:3px; box-shadow:2px 2px 3px #0008; }
+.token-acceptor>i { height:27px; width:7px; background:#100d09; border:2px inset #968162; grid-row:span 2; }
+.token-acceptor>span { color:#352814; font-size:4px; letter-spacing:.7px; }.token-acceptor>b { color:#c19c51; font-size:13px; background:#191309; border-radius:2px; text-align:center; }
+.service-lock { position:absolute; right:8px; bottom:7px; width:10px; height:10px; border-radius:50%; border:2px solid #c7b17e; background:linear-gradient(90deg,#b7a277 43%,#342719 43% 57%,#b7a277 57%); }
+.cabinet-rivets { position:absolute; inset:0; pointer-events:none; z-index:7; }
+.cabinet-rivets>i { position:absolute; width:7px; height:7px; border-radius:50%; background:linear-gradient(135deg,#fff1be,#76502b 49%,#39240e 50% 59%,#c5a065 60%); box-shadow:0 1px 2px #0009; }
+.cabinet-rivets>i:nth-child(odd){left:8px}.cabinet-rivets>i:nth-child(even){right:8px}.cabinet-rivets>i:nth-child(-n+2){top:9%}.cabinet-rivets>i:nth-child(n+3):nth-child(-n+4){top:35%}.cabinet-rivets>i:nth-child(n+5):nth-child(-n+6){top:70%}.cabinet-rivets>i:nth-child(n+7){bottom:12px}
+.royal .coin-tray { margin:17px 30px 0; height:80px; border:2px solid #c4a472; border-radius:4px 4px 23px 23px; background:linear-gradient(#edcf95,#927042 7%,#20170f 14%,#0e0c0a 30%,#37291d 65%,#b99a6c 78%,#ead3a2 86%,#73552e); box-shadow:0 3px 0 #32200f,0 7px 0 #765934,0 15px 19px #0008,inset 0 -5px 0 #4b352388; }
+.royal .coin-slot { top:11px; height:13px; left:16%; right:16%; border:1px solid #b79b6880; box-shadow:inset 0 2px 3px #000,0 1px 1px #f6dda266; }
+.royal .coin-tray>span { font-size:5px; bottom:13px; letter-spacing:1.5px; }
+
+/* The knob moves vertically toward the fixed pivot. No perspective/backward tilt. */
+@property --lever-travel { syntax:'<length>'; inherits:true; initial-value:0px; }
+.mechanical-lever { top:235px; perspective:none; }
+.lever-handle { transform:none; transition:none; }
+.lever-arm { height:calc(167px - var(--lever-travel)); transition:height .07s linear; }
+.lever-knob { transform:translateY(var(--lever-travel)); transition:transform .07s linear; }
+.lever-spinning .lever-handle { animation:lever-plunge .58s cubic-bezier(.25,.1,.3,1); }
+.lever-instruction { top:252px; font-size:7px; }
+@keyframes lever-plunge { 0%,100%{--lever-travel:0px} 42%,58%{--lever-travel:120px} }
+@keyframes marquee-chase { to{opacity:.35;box-shadow:0 0 2px #ffc65a} }
+
+/* A separate hand-crafted frontier cabinet surrounds the live cascade reels. */
+.goldrush.game-stage { --accent:#f1c56f; --reel-border:#b89358; --button:#edc77e; border-color:#a8814577; padding-bottom:30px; }
+.goldrush .stage-art { object-position:50% 25%; }
+.goldrush .stage-shade { background:linear-gradient(0deg,#080f0ded,#15180ca0 46%,#17232244 85%),radial-gradient(ellipse at 50% 40%,transparent,#0e1b1460); }
+.goldrush .game-logo { margin:4px 0 16px; }.goldrush .game-logo h1 { color:#ffdf96; font-size:49px; font-weight:800; letter-spacing:3px; text-shadow:0 2px #89602e,0 5px 2px #1b1208,0 0 30px #d5a65277; }
+.goldrush .game-logo h1 em { color:#f7ecd0; font-weight:600; }
+.goldrush .game-logo p { color:#f0dfba; }.goldrush .logo-ornament { color:#f5ce77; }
+.goldrush .bonus-ribbon { background:linear-gradient(90deg,#172b24d9,#5c4c26e0,#172b24d9); border-color:#d2aa5b77; color:#f5dfa9; box-shadow:0 3px 0 #090f0b88,0 8px 22px #0005; }
+.goldrush .slot-cabinet { border:3px solid #8b6336; border-radius:13px 13px 8px 8px; padding:0 22px; background:repeating-linear-gradient(1deg,transparent 0 4px,#bd8b4933 5px,#0e08072b 6px,transparent 8px),linear-gradient(90deg,#3a2415,#89603b 2%,#402b1a 6%,#1d2118 12%,#16221b 50%,#172019 88%,#573b24 94%,#b28b52 98%,#3a2415); box-shadow:0 0 0 2px #c49f65,0 0 0 5px #302215,0 0 0 6px #ab814366,0 25px 50px #000a,inset 0 0 0 4px #251c12; }
+.mine-cabinet-header { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:14px 16px 11px; position:relative; border-bottom:1px solid #c79c4b55; background:radial-gradient(ellipse at 50% 20%,#e4ae4025,transparent 75%); }
+.mine-cabinet-header>div { text-align:center; }.mine-cabinet-header small { display:block; color:#bfa776; font-size:6px; letter-spacing:3px; }.mine-cabinet-header strong { display:block; font-family:'Cinzel',Georgia,serif; font-size:23px; font-weight:700; letter-spacing:4px; color:#f6dba1; text-shadow:0 3px 0 #231b10; margin:7px 0; }.mine-cabinet-header div>span { color:#bca97d; font-size:5px; letter-spacing:1.8px; }
+.mine-lantern { display:block; position:relative; width:30px; height:45px; border:3px solid #96703e; border-radius:7px 7px 10px 10px; background:radial-gradient(ellipse at 50% 65%,#fff7bf 5%,#ffca59 22%,#b46720 60%,#40280d); box-shadow:0 0 12px #ffb744aa,0 0 35px #ffb74444,inset 0 0 0 3px #5c3f18; animation:lantern-flicker 3s ease-in-out infinite alternate; }
+.mine-lantern:before { content:''; position:absolute; width:13px; height:12px; border:2px solid #b38a4f; border-radius:50% 50% 0 0; top:-15px; left:4px; }.mine-lantern:after { content:''; position:absolute; left:-6px; right:-6px; bottom:-3px; height:7px; border-radius:5px; background:linear-gradient(#c29c5c,#523b20); }.mine-lantern i { position:absolute; inset:2px 9px; border-left:2px solid #714c27; transform:rotate(27deg); }
+.mine-track { height:36px; display:flex; justify-content:space-between; align-items:center; gap:12px; border-bottom:1px solid #b4935833; color:#d5c599; font-size:6px; letter-spacing:1.1px; }.mine-track>span:first-child { display:flex; align-items:center; gap:5px; }.mine-track i { width:4px; height:4px; border-radius:50%; background:#9ccb8c; box-shadow:0 0 6px #9ccb8c; }.mine-track strong { font-size:6px; font-weight:500; color:#edc978; }.mine-track b { color:#f3d38a; font-family:var(--heading); font-size:12px; margin-left:8px; }
+.goldrush .cabinet-top { color:#dcb771; height:24px; }.goldrush .cabinet-top strong { letter-spacing:2px; font-size:5px; }
+.goldrush .reel-machine { padding:8px; border:2px solid #cfac6c; border-radius:7px; background:linear-gradient(135deg,#9c7a47,#31291a 30%,#c0a16b 63%,#392b18); box-shadow:0 0 0 2px #16160f,inset 0 0 0 3px #ead4a155,0 8px 22px #0008; }
+.goldrush .slot-cabinet .reel { height:306px; background:linear-gradient(#08110d,#173326 50%,#07120d); border:1px solid #8f825055; box-shadow:inset 0 15px 15px #0008,inset 0 -15px 15px #0008; }
+.goldrush .reel-symbol { width:92px; height:92px; filter:drop-shadow(0 4px 3px #0008); }.goldrush .cell { border-bottom:1px solid #bdab6015; }.goldrush .cell.winning { background:#d9bb4522; border-color:#f6cf76; box-shadow:inset 0 0 25px #d3a43c55,0 0 6px #f8d67555; }
+.goldrush .result-marquee { color:#d9cca4; }.goldrush .result-marquee.winning-message { color:#ffe09c; }
+.goldrush .cabinet-controls { background:linear-gradient(0deg,#8b703511,transparent); border-color:#c5a46944; }.goldrush .game-stat small,.goldrush .bet-control>label { color:#bdaf87; }.goldrush .game-stat strong { color:#e6d4b1; }.goldrush .last-win strong { color:#f0cf82; }
+.goldrush .spin-button { background:linear-gradient(#ffe4a0,#d5a74e); color:#3c321b; border:1px solid #ffe9b4; box-shadow:0 4px 0 #795322,0 7px 7px #0006,inset 0 1px 2px #fff8; border-radius:7px; }.goldrush .bet-stepper { background:#0e1813; border-color:#927f4e77; }.goldrush .bet-stepper button { background:#536044; color:#f7e4b5; }.goldrush .bet-stepper input { color:#f8e6bc; }
+.goldrush .auto-spin-button { color:#ead7a4; border-color:#a38c5355; background:#b9a56715; }.goldrush .auto-spin-button.active { color:#302c17; background:#ebd193; }.goldrush .round-options { border-color:#d6b56a22; }.goldrush .round-options>span { color:#bfae83; }.goldrush .cabinet-bottom { border-color:#b59a5a33; }.goldrush .cabinet-bottom button { color:#c7b68d; }
+.goldrush .celebration-backdrop { background:#0d1a12d9; }.goldrush .celebration h2 { color:#ffe1a0; }.goldrush .celebration-star { color:#f1c568; text-shadow:0 0 30px #ffc452; }
+.goldrush .tumbling .cell.winning .reel-symbol { animation:ore-break .3s ease-in both; }.goldrush .reel.stopping .cell { animation:ore-settle .36s ease-out; }
+.premium-hero.goldrush .hero-shade { background:linear-gradient(90deg,#0c201bee,#10241bc4 33%,#14281c22 70%),linear-gradient(0deg,#10231aa0,transparent 65%); }.premium-hero.goldrush h2 em { color:#f1d28e; }.premium-hero.goldrush .primary-button { background:linear-gradient(110deg,#ffe4a6,#dcb667); color:#3e2e15; }.premium-card.goldrush .cover-title>strong,.premium-card.goldrush .cover-title strong em { color:#ffe1a2; text-shadow:0 3px 2px #1b2612,0 0 20px #ffc76755; }.premium-card.goldrush .card-tag { color:#3e301b; background:#f0d593; }.premium-card.goldrush .card-bonus-chip { color:#f6dfaf; }
+@keyframes ore-break { to{transform:translateY(-10px) scale(.35) rotate(12deg);opacity:0;filter:brightness(2)} }
+@keyframes ore-settle { 0%{transform:translateY(-26px);opacity:.5} 70%{transform:translateY(3px);opacity:1} 100%{transform:translateY(0)} }
+@keyframes lantern-flicker { 0%,40%,100%{filter:brightness(1)} 43%,47%{filter:brightness(.92)} 60%{filter:brightness(1.12)} }
+
+/* One finite, viewport-wide shower per paid win. Overlay never captures input. */
+.coin-rain { position:fixed; inset:0; z-index:70; pointer-events:none; overflow:hidden; contain:strict; }
+.falling-coin { position:absolute; top:-65px; width:var(--size); height:var(--size); border-radius:50%; opacity:0;
+  background:conic-gradient(from 25deg,#b37a21,#ffedac,#d9a33c,#fff4bd,#a66d1f,#f8d371,#b37a21); border:2px solid #ffe49b; box-shadow:inset 0 0 0 2px #ae741e,inset 0 0 0 4px #f5d47c,2px 2px 0 #9c661a,4px 5px 7px #0005;
+  animation:viewport-coin-fall var(--duration) var(--delay) cubic-bezier(.35,.1,.75,.65) both; }
+.falling-coin>i { display:grid; place-items:center; position:absolute; inset:5px; font-size:calc(var(--size)*.5); font-style:normal; color:#9c661e; border:1px dotted #ab7929; border-radius:50%; text-shadow:0 1px #ffe8a7; }
+@keyframes viewport-coin-fall { 0%{opacity:0;transform:translate3d(0,-20px,0) rotateY(0) rotateZ(0)} 6%{opacity:1} 85%{opacity:1} 100%{opacity:0;transform:translate3d(var(--drift),calc(100vh + 140px),0) rotateY(780deg) rotateZ(var(--rotation))} }
+
+@media(max-width:1150px) { .classic-pay-glass{gap:12px}.classic-pay-glass b{font-size:5px}.classic-pay-glass small{font-size:7px}.royal .slot-cabinet{padding-left:19px;padding-right:19px}.royal .classic-marquee strong{font-size:27px}.mechanical-lever{top:230px}.goldrush .reel-symbol{width:80px;height:80px}.goldrush .game-logo h1{font-size:40px} }
+@media(max-width:900px) { .mine-track{font-size:5px;letter-spacing:.5px}.mine-track strong{font-size:5px}.mine-cabinet-header strong{font-size:20px}.goldrush .slot-cabinet .reel{height:267px}.goldrush .reel-symbol{width:73px;height:73px}.royal .classic-marquee strong{font-size:25px}.royal .slot-cabinet .reel{height:267px} }
+@media(max-width:650px) {
+  .royal .slot-cabinet{padding:7px 10px 0;border-radius:24px 24px 8px 8px;border-width:2px;box-shadow:0 0 0 1px #4e3119,0 0 0 3px #b59862,4px 6px 0 -2px #180b11,6px 8px 0 -2px #866039,0 18px 30px #0008}.royal .slot-cabinet:before,.royal .slot-cabinet:after{width:3px;top:110px;bottom:20px}.royal .slot-cabinet:before{left:2px}.royal .slot-cabinet:after{right:2px}.classic-crown{height:13px;gap:9px}.classic-crown>span{font-size:16px}.classic-crown i{width:35px;height:3px}.classic-marquee{padding:15px 5px 12px;border-radius:17px 17px 4px 4px;margin-bottom:8px;border-width:1px}.classic-marquee:before{inset:5px;border-radius:13px 13px 2px 2px}.classic-marquee>span{font-size:4px;letter-spacing:.6px}.royal .classic-marquee strong{font-size:16px;letter-spacing:.8px;margin:6px 0}.classic-marquee small{font-size:3px;letter-spacing:.2px}.marquee-bulbs i{width:3px;height:3px}.classic-pay-glass{gap:7px;padding:5px 3px}.classic-pay-glass>span{gap:3px}.classic-pay-glass .reel-symbol{width:20px;height:20px}.classic-pay-glass b{font-size:3px;letter-spacing:.2px}.classic-pay-glass small{font-size:4px;letter-spacing:.3px;margin-top:3px}.classic-pay-glass>i{font-size:7px}.royal .reel-machine{padding:4px;border-width:1px;border-radius:7px}.royal .reel-machine:after{inset:5px}.royal .slot-cabinet .reel{height:210px;border-radius:4px;border-width:1px}.reel-index-rail{height:15px;font-size:4px;letter-spacing:1px;margin:3px 2px 0}.reel-index-rail b{font-size:4px}.royal .cabinet-controls{padding:10px 1px 14px}.royal .spin-button{min-height:52px;border-width:1px}.classic-apron{height:53px;margin:0 -3px;gap:5px}.cabinet-speaker{width:42px;padding:7px;gap:2px}.cabinet-speaker i{height:1px}.serial-plate{padding:6px 8px;border-width:1px}.serial-plate strong{font-size:8px;letter-spacing:2px}.serial-plate span,.serial-plate small{font-size:3px;letter-spacing:.4px}.token-acceptor{padding:3px;gap:2px;grid-template-columns:8px 17px}.token-acceptor>i{width:5px;height:20px;border-width:1px}.token-acceptor>span{font-size:3px;letter-spacing:0}.token-acceptor>b{font-size:9px}.service-lock{width:6px;height:6px;border-width:1px;right:3px;bottom:3px}.cabinet-rivets>i{width:4px;height:4px}.cabinet-rivets>i:nth-child(odd){left:4px}.cabinet-rivets>i:nth-child(even){right:4px}.royal .coin-tray{height:54px;margin:14px 9px 0;border-radius:3px 3px 15px 15px;border-width:1px}.royal .coin-slot{top:8px;height:9px}.royal .coin-tray>span{font-size:3px;letter-spacing:.6px;bottom:9px}.mechanical-lever{top:186px;right:-33px}.lever-instruction{font-size:9px}
+  .goldrush .game-logo h1{font-size:28px;flex-direction:row;gap:7px;letter-spacing:.5px}.goldrush .game-logo h1 em{font-size:27px;letter-spacing:.5px}.goldrush .slot-cabinet{padding:0 7px;border-width:2px}.mine-cabinet-header{padding:13px 5px 9px;gap:12px}.mine-cabinet-header small{font-size:4px;letter-spacing:1px}.mine-cabinet-header strong{font-size:16px;letter-spacing:1px;margin:5px 0}.mine-cabinet-header div>span{font-size:3px;letter-spacing:.3px}.mine-lantern{width:18px;height:29px;border-width:2px;flex-shrink:0}.mine-lantern:before{width:8px;height:7px;top:-10px;left:2px;border-width:1px}.mine-lantern i{inset:2px 5px;border-width:1px}.mine-track{height:32px;font-size:4px;letter-spacing:.2px;gap:6px}.mine-track strong{font-size:4px;max-width:100px;text-align:center;line-height:1.8}.mine-track b{font-size:9px;margin-left:3px}.mine-track>span:last-child{max-width:65px;line-height:1.7;text-align:right}.goldrush .reel-machine{padding:3px;border-width:1px}.goldrush .slot-cabinet .reel{height:207px}.goldrush .reel-symbol{width:47px;height:47px}.goldrush .cabinet-top strong{font-size:4px;letter-spacing:.8px}.goldrush .bonus-ribbon{flex-wrap:wrap}.goldrush .cabinet-bottom button{font-size:5px}.goldrush .cabinet-controls .bet-stepper{min-width:72px}.goldrush .cabinet-controls .bet-stepper input{width:36px;font-size:16px}
+}
+@media(prefers-reduced-motion:reduce) { .coin-rain{display:none}.lever-spinning .lever-handle,.has-win .marquee-bulbs i,.mine-lantern,.goldrush .tumbling .cell.winning .reel-symbol,.goldrush .reel.stopping .cell{animation:none!important} }
