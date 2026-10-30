@@ -1,6 +1,14 @@
 import {BASS_PAYLINES} from '../lib/game-state.js';
 
 export const games = [
+  { id:'saloon', name:'Saloon Luck', title:['Saloon','Luck'], subtitle:'THE NEON MECHANICAL COLLECTION',
+    tag:'NEW · CRYSTAL RUSH',category:'Mechanical',mood:'Neo-Western',meta:'Crystal lever · 2× free spins',bonus:8,reels:3,multiplier:2,
+    copy:'Old-world mechanics. A little neon magic.',
+    description:'An ornate brass-and-bronze machine inspired by the supplied Saloon Luck design. Pull the faceted crystal lever, watch three ivory drums settle, and follow five fixed paylines. Sheriff stars are wild. Three crystal BONUS symbols anywhere award 8 Crystal Rush free spins with double line wins. Your credits and wins are saved automatically.',
+    headline:['Forged in brass.','Lit by possibility.'],feature:'Three mechanical reels. One luminous crystal lever.\nEnter the neon saloon and discover Crystal Rush.',
+    accent:'#a9f5d1',label:'CRYSTAL RUSH · 8 FREE SPINS · 2× WINS',
+    symbolNames:['Ruby seven','Saloon bell','Cherries','Brass BAR','Lucky horseshoe','Sheriff wild','Crystal bonus'],
+    initialGrid:[['star','gem','leaf'],['crown','gem','orb'],['leaf','gem','star']] },
   { id:'bigbass', name:'Big Bass Bonanza', title:['Big Bass','Bonanza'], subtitle:'THE FISHING COLLECTION',
     tag:'NEW · FISH & COLLECT',category:'Fishing',mood:'Lakeside',meta:'10 lines · Fish collection',bonus:10,reels:5,multiplier:1,
     copy:'Cast out. Reel in a little adventure.',description:'A virtual-coin recreation of Big Bass Bonanza’s published fishing feature. Land 3, 4 or 5 scatters for 10, 15 or 20 free spins. Fisherman wilds collect every visible money fish during the feature. Each set of four fishermen queues 10 extra spins with 2×, 3× and finally 10× collection.',

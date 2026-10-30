@@ -15,9 +15,9 @@ Static HTML and critical inline CSS display the intro before the React bundle lo
 
 ## Featured-game banner
 
-The lobby rotates all seven game images every 10 seconds, starting after the intro finishes. Far-edge arrows and left/right keyboard keys move between games; direct selectors jump to a game. Every manual change restarts the full interval. Pause/resume is explicit, and timers are disposed on navigation. Neighboring scenes preload to reduce image flashes.
+The lobby rotates all eight game images every 10 seconds, starting after the intro finishes. Far-edge arrows and left/right keyboard keys move between games; direct selectors jump to a game. Every manual change restarts the full interval. Pause/resume is explicit, and timers are disposed on navigation. Neighboring scenes preload to reduce image flashes.
 
-The seven small slide bars sit at the bottom-center of the banner at every breakpoint. Their dark glass backing preserves contrast over game artwork; the selected bar is longer and brighter. On phones the redundant numeric counter is hidden to keep the pause control clear of the centered bars.
+The eight small slide bars sit at the bottom-center of the banner at every breakpoint. Their dark glass backing preserves contrast over game artwork; the selected bar is longer and brighter. On phones the redundant numeric counter is hidden to keep the pause control clear of the centered bars.
 
 ## Miami wallpaper and readability
 

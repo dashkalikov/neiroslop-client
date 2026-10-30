@@ -95,14 +95,6 @@
 @keyframes ore-settle { 0%{transform:translateY(-26px);opacity:.5} 70%{transform:translateY(3px);opacity:1} 100%{transform:translateY(0)} }
 @keyframes lantern-flicker { 0%,40%,100%{filter:brightness(1)} 43%,47%{filter:brightness(.92)} 60%{filter:brightness(1.12)} }
 
-/* One finite, viewport-wide shower per paid win. Overlay never captures input. */
-.coin-rain { position:fixed; inset:0; z-index:70; pointer-events:none; overflow:hidden; contain:strict; }
-.falling-coin { position:absolute; top:-65px; width:var(--size); height:var(--size); border-radius:50%; opacity:0;
-  background:conic-gradient(from 25deg,#b37a21,#ffedac,#d9a33c,#fff4bd,#a66d1f,#f8d371,#b37a21); border:2px solid #ffe49b; box-shadow:inset 0 0 0 2px #ae741e,inset 0 0 0 4px #f5d47c,2px 2px 0 #9c661a,4px 5px 7px #0005;
-  animation:viewport-coin-fall var(--duration) var(--delay) cubic-bezier(.35,.1,.75,.65) both; }
-.falling-coin>i { display:grid; place-items:center; position:absolute; inset:5px; font-size:calc(var(--size)*.5); font-style:normal; color:#9c661e; border:1px dotted #ab7929; border-radius:50%; text-shadow:0 1px #ffe8a7; }
-@keyframes viewport-coin-fall { 0%{opacity:0;transform:translate3d(0,-20px,0) rotateY(0) rotateZ(0)} 6%{opacity:1} 85%{opacity:1} 100%{opacity:0;transform:translate3d(var(--drift),calc(100vh + 140px),0) rotateY(780deg) rotateZ(var(--rotation))} }
-
 @media(max-width:1150px) { .classic-pay-glass{gap:12px}.classic-pay-glass b{font-size:5px}.classic-pay-glass small{font-size:7px}.royal .slot-cabinet{padding-left:19px;padding-right:19px}.royal .classic-marquee strong{font-size:27px}.mechanical-lever{top:230px}.goldrush .reel-symbol{width:80px;height:80px}.goldrush .game-logo h1{font-size:40px} }
 @media(max-width:900px) { .mine-track{font-size:5px;letter-spacing:.5px}.mine-track strong{font-size:5px}.mine-cabinet-header strong{font-size:20px}.goldrush .slot-cabinet .reel{height:267px}.goldrush .reel-symbol{width:73px;height:73px}.royal .classic-marquee strong{font-size:25px}.royal .slot-cabinet .reel{height:267px} }
 @media(max-width:650px) {

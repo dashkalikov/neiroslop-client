@@ -9,5 +9,7 @@ import './styles/slot-craft.css';
 import './styles/fishing-and-settings.css';
 import './styles/sound-and-lever.css';
 import './styles/brand-and-carousel.css';
+import './styles/saloon.css';
+import './styles/win-effects.css';
 
 createRoot(document.getElementById('root')).render(<><StartupGate/><App /></>);

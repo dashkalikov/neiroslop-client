@@ -2,7 +2,7 @@ import {useEffect,useRef,useState,useId} from 'react';
 import {leverPose,leverProgress} from '../lib/game-state.js';
 
 /** Rigid shaft pivots from upright to downward, preserving both end positions. */
-export default function Lever({disabled,onPull,spinning}) {
+export default function Lever({disabled,onPull,spinning,crystal=false}) {
   const [progress,setProgress]=useState(0);
   const current=useRef(0), origin=useRef(null), dragged=useRef(false), frame=useRef(null);
   const id=useId().replaceAll(':','');
@@ -43,6 +43,7 @@ export default function Lever({disabled,onPull,spinning}) {
           <linearGradient id={id+'-steel'} gradientUnits="userSpaceOnUse" x1="42" y1="0" x2="62" y2="0"><stop stopColor="#4d4840"/><stop offset=".22" stopColor="#d5d7ce"/><stop offset=".46" stopColor="#fffff2"/><stop offset=".68" stopColor="#aaa895"/><stop offset="1" stopColor="#59523c"/></linearGradient>
           <linearGradient id={id+'-brass'} x2=".2" y2="1"><stop stopColor="#ffdfa0"/><stop offset=".3" stopColor="#775532"/><stop offset=".55" stopColor="#d5b373"/><stop offset="1" stopColor="#684725"/></linearGradient>
           <radialGradient id={id+'-ruby'} cx=".3" cy=".24" r=".8"><stop stopColor="#ffd4bc"/><stop offset=".18" stopColor="#ff6a65"/><stop offset=".4" stopColor="#da233b"/><stop offset=".7" stopColor="#8b1227"/><stop offset="1" stopColor="#350612"/></radialGradient>
+          <linearGradient id={id+'-crystal'} x2="1" y2="1"><stop stopColor="#fff2ff"/><stop offset=".25" stopColor="#c9a2ff"/><stop offset=".55" stopColor="#6de9dc"/><stop offset=".8" stopColor="#c6a1ff"/><stop offset="1" stopColor="#93f5bf"/></linearGradient>
         </defs>
         <rect x="9" y="163" width="82" height="65" rx="22" fill={'url(#'+id+'-brass)'} stroke="#edcf91" strokeWidth="1.5"/>
         <circle cx="52" cy="195" r="25" fill="#4b3826" stroke="#e7c78e" strokeWidth="3"/>
@@ -52,8 +53,7 @@ export default function Lever({disabled,onPull,spinning}) {
         <line x1="52" y1="195" x2={pose.x} y2={pose.y} stroke={'url(#'+id+'-steel)'} strokeWidth="16" strokeLinecap="round"/>
         <circle cx="52" cy="195" r="7" fill={'url(#'+id+'-brass)'} stroke="#e4c58f"/>
         <circle className="grip-shadow" cx={pose.x+2} cy={pose.y+4} r="34" fill="#0005"/>
-        <circle className="ruby-grip" cx={pose.x} cy={pose.y} r="33" fill={'url(#'+id+'-ruby)'} stroke="#f4828a" strokeWidth="1"/>
-        <ellipse cx={pose.x-8} cy={pose.y-12} rx="11" ry="5" fill="#fff6" transform={'rotate(-25 '+(pose.x-8)+' '+(pose.y-12)+')'}/>
+        {crystal?<g className="crystal-grip" transform={`translate(${pose.x} ${pose.y})`}><path d="M0-37 25-18 17 24 0 32-17 24-25-18Z" fill={'url(#'+id+'-crystal)'} stroke="#ddffed" strokeWidth="1.5"/><path d="M0-37-10-12 0 32 10-12ZM-25-18-10-12 25-18M-17 24 0 32 17 24" fill="#fff3" stroke="#f4fff7" strokeWidth="1"/><path d="M-17 25H17V36H-17Z" fill={'url(#'+id+'-brass)'} stroke="#f7dc9f"/><path d="M-8-18 0-29 5-20" fill="none" stroke="#fff" strokeWidth="2"/></g>:<><circle className="ruby-grip" cx={pose.x} cy={pose.y} r="33" fill={'url(#'+id+'-ruby)'} stroke="#f4828a" strokeWidth="1"/><ellipse cx={pose.x-8} cy={pose.y-12} rx="11" ry="5" fill="#fff6" transform={'rotate(-25 '+(pose.x-8)+' '+(pose.y-12)+')'}/></>}
       </svg>
     </button>
     <span className="lever-instruction">ONE PULL<br/>ONE SPIN</span>

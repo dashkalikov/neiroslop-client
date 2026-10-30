@@ -144,7 +144,6 @@ body { background:var(--bg); color:var(--text); }
 .coin-slot { position:absolute; top:10px; left:25%; right:25%; height:12px; border-radius:3px; background:#090706; box-shadow:0 -2px 1px #0006,0 1px 1px #e0bc7b77; }
 .coin-tray>span { position:absolute; bottom:7px; left:0; right:0; font-size:5px; letter-spacing:1.9px; color:#dabd8a; }
 .coin-spill { position:absolute; bottom:25px; left:50%; width:1px; height:1px; z-index:7; pointer-events:none; }
-.coin-spill i { display:grid; place-items:center; position:absolute; width:25px; height:25px; border-radius:50%; background:radial-gradient(circle at 30% 25%,#fff4bd,#e7b74e 50%,#ad752a 90%); color:#9b6427; font-size:15px; font-style:normal; border:2px solid #f2d27c; box-shadow:0 0 0 1px #a97730,0 3px 6px #0005,inset 0 0 0 2px #c38b3899; opacity:0; animation:coin-spout 1.8s var(--delay) cubic-bezier(.3,.2,.8,.6) forwards; }
 
 /* The underwater game has a separate luminous jade and pearl treatment. */
 .ocean.game-stage { --accent:#a0eadb; --reel-border:#7eb8ad; border-color:#70b0ae66; }

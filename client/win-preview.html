@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Win animation preview</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% 80%,#51402c55,transparent 60%),#100e16;color:#f4eee4;font:14px system-ui,sans-serif;min-height:100vh;display:grid;place-items:center}main{text-align:center;max-width:640px;padding:24px}small{color:#cfb783;letter-spacing:4px;font-size:10px}h1{font:clamp(48px,9vw,90px) Georgia,serif;margin:22px 0 8px;color:#f1d99e}p{color:#a7a0b3;line-height:1.7}button{border:1px solid #bca16c66;border-radius:30px;background:#d8c191;color:#211b14;padding:12px 22px;font:inherit;cursor:pointer;margin:8px 4px}button+button{background:transparent;color:#d8c191}.palette{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:48px}.palette img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 3px 4px #0008)}body.paused .coin-rain *{animation-play-state:paused!important}.note{font-size:11px;margin-top:24px}@media(max-width:650px){.palette{gap:7px}.palette img{width:34px;height:34px}}
+  </style>
+</head>
+<body>
+  <main>
+    <small>LUCKY LOUNGE · WIN EFFECT</small>
+    <h1>Lucky you.</h1>
+    <p>Numbered casino chips. Gold and silver. A little shower of fortune.</p>
+    <div><button id="replay">Replay win</button><button id="pause">Freeze frame</button></div>
+    <div class="palette" aria-label="Token artwork"></div>
+    <p class="note">Animation preview · Virtual tokens only</p>
+  </main>
+  <div id="preview"></div>
+  <script type="module">
+    import React from 'react';
+    import { createRoot } from 'react-dom/client';
+    import CoinRain from './src/components/CoinRain.jsx';
+    import './src/styles/win-effects.css';
+    const root = createRoot(document.getElementById('preview'));
+    let round = 0;
+    const pause = document.getElementById('pause');
+    document.getElementById('replay').onclick = () => {
+      document.body.classList.remove('paused');
+      pause.textContent = 'Freeze frame';
+      root.render(React.createElement(CoinRain, {key: ++round}));
+    };
+    pause.onclick = () => {
+      const frozen = document.body.classList.toggle('paused');
+      pause.textContent = frozen ? 'Resume motion' : 'Freeze frame';
+      // A repeatable mid-flight frame also works after the finite shower ends.
+      for (const animation of document.querySelector('.coin-rain')?.getAnimations({subtree:true}) || []) {
+        if (frozen) { animation.pause(); animation.currentTime = 1400; }
+        else animation.play();
+      }
+    };
+    for (const type of ['chip-green','chip-orange','chip-red','chip-blue','chip-purple','chip-pink','chip-platinum','coin-gold','coin-silver','stack-blue','stack-purple']) {
+      const img = document.createElement('img');
+      img.src = `/assets/win-tokens/${type}.svg`;
+      img.alt = type.replaceAll('-', ' ');
+      document.querySelector('.palette').appendChild(img);
+    }
+  </script>
+</body>
+</html>

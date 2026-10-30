@@ -8,7 +8,7 @@ const featureIds=games.map(game=>game.id);
 
 export default function Lobby({ view, navigate }) {
   const { favorites, toggleFavorite, history } = useLounge();
-  const [feature, setFeature] = useState('bigbass');
+  const [feature, setFeature] = useState(games[0].id);
   const [rotationPaused,setRotationPaused]=useState(false);
   const carousel=useRef(null);
   useEffect(()=>{
@@ -53,6 +53,6 @@ export default function Lobby({ view, navigate }) {
       </article>)}</div>
       {!list.length ? <div className="empty-state"><span>✧</span><h3>{query ? 'No adventures found.' : 'A little quiet here.'}</h3><p>{view === 'favorites' ? 'Tap a heart to keep a world close.' : view === 'recent' ? 'Play a round and your recent games will appear here.' : 'Try another theme or search term.'}</p><button className="secondary-button" onClick={() => {setQuery('');setCategory('All worlds');navigate('all');}}>Explore all games</button></div> : null}
     </section>
-    <section className="bottom-banner"><span className="banner-sparkle">✧</span><div><strong>Your first adventure is on us.</strong><p>10,000 welcome coins. Seven beautiful worlds. Make yourself at home.</p></div><span className="welcome-label"><span className="green-dot" /> FREE TO EXPLORE</span></section>
+    <section className="bottom-banner"><span className="banner-sparkle">✧</span><div><strong>Your first adventure is on us.</strong><p>10,000 welcome coins. {games.length} beautiful worlds. Make yourself at home.</p></div><span className="welcome-label"><span className="green-dot" /> FREE TO EXPLORE</span></section>
   </main>;
 }
