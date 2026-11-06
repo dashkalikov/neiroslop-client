@@ -9,6 +9,6 @@ export async function api(path, body) {
     signal: AbortSignal.timeout(12000),
   });
   const data = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(data?.error || 'The lounge is reconnecting. Please try again.');
+  if (!response.ok) { const error=new Error(data?.error || 'The lounge is reconnecting. Please try again.');error.status=response.status;throw error; }
   return data;
 }

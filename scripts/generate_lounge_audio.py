@@ -1,4 +1,4 @@
-"""Original looping lounge composition and physical coin-rain effects. Standard library only."""
+"""Original looping lounge compositions and physical coin-rain effects."""
 from array import array
 from math import exp, pi, sin, sqrt, tanh
 from pathlib import Path
@@ -33,6 +33,10 @@ def note(left: list[float],right: list[float],at: float,duration: float,midi: in
             sample=(sin(2*pi*frequency*t)+.19*sin(2*pi*frequency*2.001*t)+.07*sin(2*pi*frequency*3*t))*envelope
         elif voice=='bass':
             sample=(sin(2*pi*frequency*t)+.17*sin(2*pi*frequency*2*t))*(1-exp(-t*24))*exp(-t*1.3)*min(1,(duration-t)/.1)
+        elif voice == 'pluck':
+            phase = 2 * pi * frequency * t
+            envelope = (1 - exp(-t * 70)) * exp(-t * 3.3) * min(1, (duration - t) / .08)
+            sample = (sin(phase) + .22 * sin(phase * 2) + .09 * sin(phase * 3)) * envelope
         else:
             sample=(sin(2*pi*frequency*t)+.28*sin(2*pi*frequency*2*t)*exp(-t*3.5)
                     +.08*sin(2*pi*frequency*3*t)*exp(-t*5))
@@ -40,6 +44,19 @@ def note(left: list[float],right: list[float],at: float,duration: float,midi: in
         index=(start+i)%len(left) if circular else start+i
         if index>=len(left):break
         left[index]+=sample*lg;right[index]+=sample*rg
+
+
+def room_reflections(
+    left: list[float], right: list[float], reflections: list[tuple[float, float]],
+) -> None:
+    """Mix short stereo delays with the tails wrapping through the loop."""
+    dry_left, dry_right = left[:], right[:]
+    length = len(left)
+    for delay, gain in reflections:
+        offset = round(delay * RATE)
+        for i in range(length):
+            left[i] += dry_right[(i - offset) % length] * gain
+            right[i] += dry_left[(i - offset) % length] * gain
 
 
 def soundtrack() -> None:
@@ -66,14 +83,74 @@ def soundtrack() -> None:
         for when,pitch,duration in melodies[b%8]:
             if b//8==1 and when==3:continue
             note(left,right,at+when*beat,duration*beat+.5,pitch,.105,.08*sin(b),circular=True)
-    # Circular stereo reflections preserve tails through the loop boundary.
-    dry_l=left[:];dry_r=right[:]
-    for delay,level in [(.17,.16),(.31,.11),(.53,.075),(.83,.035)]:
-        offset=round(delay*RATE)
-        for i in range(length):
-            left[i]+=dry_r[(i-offset)%length]*level
-            right[i]+=dry_l[(i-offset)%length]*level
+    room_reflections(left, right, [(.17,.16),(.31,.11),(.53,.075),(.83,.035)])
     save('lounge-soundtrack.wav',left,right)
+
+
+def render_lounge_loop(
+    filename: str,
+    bpm: int,
+    chords: list[tuple[int, tuple[int, ...]]],
+    melodies: list[list[tuple[float, int, float]]],
+    plucks: list[tuple[float, int]],
+    reflections: list[tuple[float, float]],
+) -> None:
+    beat = 60 / bpm
+    bar = beat * 4
+    length = round(bar * len(chords) * 2 * RATE)
+    left, right = [0.0] * length, [0.0] * length
+
+    for index, (bass, voicing) in enumerate(chords * 2):
+        start = index * bar
+        note(left, right, start, bar * .9, bass, .11, -.08, 'bass', True)
+        for voice, pitch in enumerate(voicing):
+            note(left, right, start, bar + 1.4, pitch, .035, (voice - 1.5) * .22, 'pad', True)
+        for offset, voice in plucks:
+            note(left, right, start + offset * beat, 1.5, voicing[voice] + 12,
+                 .07, (voice - 1.5) * .24, 'pluck', True)
+        for offset, pitch, beats in melodies[index % len(melodies)]:
+            note(left, right, start + offset * beat, beats * beat + .55,
+                 pitch, .125, .08, 'keys', True)
+
+    room_reflections(left, right, reflections)
+    save(filename, left, right)
+
+
+def additional_soundtracks() -> None:
+    # Golden Hour moves through Fmaj7, C/E, Am7 and G6 with a light plucked pattern.
+    golden_chords = [
+        (29, (48, 52, 53, 57)), (28, (48, 52, 55, 62)),
+        (33, (48, 52, 55, 59)), (31, (47, 50, 55, 64)),
+        (38, (45, 48, 52, 53)), (29, (45, 48, 52, 55)),
+        (36, (47, 50, 52, 55)), (31, (45, 50, 55, 59)),
+    ]
+    golden_melody = [
+        [(0, 69, 1), (1.5, 72, .8), (2.5, 76, 1.2)],
+        [(.5, 74, 1), (2, 72, 1.5)], [(0, 71, .8), (1, 72, .8), (2.5, 76, 1.2)],
+        [(0, 74, 1), (1.5, 71, 1), (3, 67, 1)],
+        [(0, 69, 1.5), (2, 72, 1), (3, 74, .8)],
+        [(0, 76, 1.5), (2.5, 72, 1)], [(0, 71, 1), (2, 67, 1), (3, 64, .8)],
+        [(.5, 67, 1.3), (2.5, 71, 1)],
+    ]
+    render_lounge_loop('golden-hour.wav', 76, golden_chords, golden_melody,
+                       [(0, 0), (.75, 2), (1.5, 1), (2.5, 3), (3.25, 2)],
+                       [(.16, .14), (.36, .10), (.57, .065)])
+
+    # Moonlit Keys uses a slower minor melody and leaves space between phrases.
+    moon_chords = [
+        (33, (45, 52, 55, 59)), (29, (45, 48, 52, 53)),
+        (38, (45, 48, 52, 53)), (28, (47, 50, 55, 59)),
+        (33, (45, 48, 55, 59)), (28, (48, 52, 55, 59)),
+        (29, (45, 48, 52, 55)), (31, (47, 50, 55, 64)),
+    ]
+    moon_melody = [
+        [(.5, 76, 1.5), (2.5, 72, 1.4)], [(0, 69, 2.6), (3, 67, .8)],
+        [(0, 65, 1.6), (2, 69, 1.6)], [(.5, 71, 2.4)],
+        [(0, 72, 1.5), (2, 76, 1.7)], [(0, 74, 1.4), (2.5, 71, 1.1)],
+        [(.5, 72, 2.2), (3, 69, .8)], [(0, 67, 1.7), (2, 64, 1.5)],
+    ]
+    render_lounge_loop('moonlit-keys.wav', 64, moon_chords, moon_melody,
+                       [(1.25, 0), (3, 2)], [(.21, .20), (.47, .13), (.73, .085), (.99, .045)])
 
 
 def coin_rain() -> None:
@@ -116,5 +193,8 @@ def cues() -> None:
 
 
 if __name__=='__main__':
-    soundtrack();coin_rain();cues()
-    print('Generated 80-second original lounge soundtrack, stereo coin rain and cell landing cues.')
+    soundtrack()
+    additional_soundtracks()
+    coin_rain()
+    cues()
+    print('Generated three original lounge tracks, stereo coin rain and cell landing cues.')

@@ -1,6 +1,10 @@
 import {BASS_PAYLINES} from '../lib/game-state.js';
 
 export const games = [
+  {id:'roulette',name:'Riviera Roulette',title:['Riviera','Roulette'],subtitle:'THE TABLE COLLECTION',type:'table',
+    tag:'NEW · EUROPEAN ROULETTE',category:'Table games',mood:'Riviera',meta:'Single zero · 35:1',copy:'A timeless game. A seat just for you.',
+    description:'A European single-zero roulette wheel with a rolling ivory ball, polished walnut, brass pockets and an emerald betting table. Place chips on numbers, colors, dozens and columns. Every round is saved with your wallet.',
+    headline:['A spin of elegance.','A moment of possibility.'],feature:'Polished walnut. Emerald felt. An ivory ball.\nTake your seat at the Riviera.',accent:'#b9d7a7'},
   { id:'saloon', name:'Saloon Luck', title:['Saloon','Luck'], subtitle:'THE NEON MECHANICAL COLLECTION',
     tag:'NEW · CRYSTAL RUSH',category:'Mechanical',mood:'Neo-Western',meta:'Crystal lever · 2× free spins',bonus:8,reels:3,multiplier:2,
     copy:'Old-world mechanics. A little neon magic.',
@@ -26,8 +30,8 @@ export const games = [
   { id: 'royal', name: 'Velvet Sevens', title: ['Velvet', 'Sevens'], subtitle: 'THE MECHANICAL COLLECTION',
     tag: 'PULL. SPIN. CELEBRATE.', category: 'Classic', mood: 'Timeless', meta: 'Pull the lever', bonus: 7, reels: 3, multiplier: 1,
     copy: 'Pull handle · 3 reels · 5 paylines',
-    description: 'A brass-trimmed mechanical classic. Pull the ruby lever, feel the cabinet rumble, and watch golden coins spill into the tray when the reels line up. Three BONUS tokens unlock 7 free spins.',
-    headline: ['A classic touch.', 'A golden moment.'], feature: 'Polished brass. Ruby sevens. A lever made to pull.\nMeet your new old-school favorite.',
+    description: 'Step into a burgundy Art Deco lounge. Pull the ruby lever on Model 07, watch the ivory drums turn behind curved glass, and see coins spill into the brass tray when the reels line up. Three horseshoes unlock 7 free spins.',
+    headline: ['Ruby reels.', 'A golden evening.'], feature: 'Stepped brass, ruby sevens, and a mechanical lever.\nThree horseshoes unlock 7 free spins.',
     accent: '#efd39a', label: 'THE ORIGINAL ONE-ARMED CLASSIC', symbolNames: ['Ruby seven', 'Golden bell', 'Cherries', 'BAR', 'Lemon', 'Lucky wild', 'Horseshoe bonus'] },
   { id: 'moon', name: 'Moonlight Magic', title: ['Moonlight', 'Magic'], subtitle: 'THE ENCHANTED COLLECTION',
     tag: 'LOUNGE FAVORITE', category: 'Fantasy', mood: 'Enchanting', meta: '8 free spins', bonus: 8,

@@ -1,4 +1,7 @@
 const paths = {
+  roulette:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/><circle cx="12" cy="12" r="1"/>',
+  profile:'<circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/>',
+  undo:'<path d="M3 10h11a7 7 0 0 1 0 14M3 10l6-6M3 10l6 6"/>',
   pause:'<path d="M8 5v14M16 5v14" stroke-width="3"/>',
   play:'<path d="m8 4 12 8-12 8Z"/>',
   settings:'<path d="m9 3 1-1h4l1 3 3 1 3-1 2 4-2 2v3l2 2-2 4-3-1-3 1-1 3h-4l-1-3-3-1-3 1-2-4 2-2v-3l-2-2 2-4 3 1 3-1Z"/><circle cx="12" cy="12" r="3"/>',

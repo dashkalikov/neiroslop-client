@@ -3,10 +3,11 @@ import { asset, games } from '../data/games.js';
 import { useLounge } from '../LoungeContext.jsx';
 import Icon from './Icon.jsx';
 import {createCarousel} from '../lib/carousel.js';
+import {GAME_GROUPS,filterCatalog} from '../lib/catalog.js';
 
 const featureIds=games.map(game=>game.id);
 
-export default function Lobby({ view, navigate }) {
+export default function Lobby({ view, navigate,group='all' }) {
   const { favorites, toggleFavorite, history } = useLounge();
   const [feature, setFeature] = useState(games[0].id);
   const [rotationPaused,setRotationPaused]=useState(false);
@@ -26,10 +27,7 @@ export default function Lobby({ view, navigate }) {
   const [category, setCategory] = useState('All worlds');
   const [sort, setSort] = useState('Featured');
   const game = games.find(g => g.id === feature);
-  const recentIds = new Set(history.map(round => round.game));
-  const list = games.filter(g => (view !== 'favorites' || favorites.includes(g.id)) &&
-    (view !== 'recent' || recentIds.has(g.id)) && g.name.toLowerCase().includes(query.toLowerCase()) &&
-    (category === 'All worlds' || category === g.category));
+  const list = filterCatalog(games,{group,view,favorites,recent:history.map(r=>r.game),query,theme:category});
   if (sort === 'Name A–Z') list.sort((a, b) => a.name.localeCompare(b.name));
 
   return <main className="lobby-main">
@@ -40,12 +38,13 @@ export default function Lobby({ view, navigate }) {
       <button className="hero-arrow hero-next" onClick={()=>carousel.current?.next()} aria-label="Next featured game"><Icon name="arrow"/></button>
       <div className="hero-shade" /><div className="ambient-motes" aria-hidden="true">{Array.from({length:12}, (_, i) => <i key={i} style={{'--i': i}} />)}</div>
       <div className="hero-content"><span className="feature-pill"><span>✦</span> THE ART OF A LITTLE ESCAPE</span><h2>{game.headline[0]}<br /><em>{game.headline[1]}</em></h2><p>{game.feature.split('\n').map((line, i) => <span key={line}>{line}{i === 0 ? <br /> : null}</span>)}</p><button className="primary-button" onClick={() => navigate(`game/${game.id}`)}>Discover the game <Icon name="arrow" /></button><span className="hero-footnote">YOUR NEXT ADVENTURE AWAITS</span></div>
-      <div className="hero-game-label"><span>{game.subtitle}</span><strong>{game.name}</strong><div>✦ &nbsp; {game.reels || 5} reels &nbsp; · &nbsp; {game.meta}</div></div>
+      <div className="hero-game-label"><span>{game.subtitle}</span><strong>{game.name}</strong><div>✦ &nbsp; {game.type==='table'?'37 pockets':`${game.reels||5} reels`} &nbsp; · &nbsp; {game.meta}</div></div>
       <div className="hero-pages">{games.map(g => <button key={g.id} className={feature === g.id ? 'selected' : ''} onClick={() => carousel.current?.select(g.id)} aria-label={`Feature ${g.name}`} aria-pressed={feature === g.id} />)}</div>
       <div className="hero-rotation-tools"><span>{String(featureIds.indexOf(feature)+1).padStart(2,'0')} / {String(games.length).padStart(2,'0')}</span><button onClick={()=>rotationPaused?carousel.current?.start():carousel.current?.pause()} aria-label={rotationPaused?'Resume banner rotation':'Pause banner rotation'} aria-pressed={rotationPaused}><Icon name={rotationPaused?'play':'pause'}/></button></div>
     </section>
     <section className="perks" aria-label="Casino features">{[['coins','violet','Play for the feeling','Virtual coins. Real excitement.'],['gift','gold','A daily dose of lucky','1,500 free coins, every day.'],['sparkles','mint','Find your kind of fun','Beautiful worlds. Memorable moments.']].map(([ic,color,title,copy]) => <div key={title}><span className={`perk-icon ${color}`}><Icon name={ic} /></span><p><strong>{title}</strong><span>{copy}</span></p></div>)}</section>
     <section className="games-section" aria-labelledby="games-title"><div className="section-heading"><div><p className="eyebrow collection-eyebrow">THE NEIROSLOP BURMALDA COLLECTION</p><h2 id="games-title">{view === 'favorites' ? 'Your favorite escapes' : view === 'recent' ? 'Back to your favorite feeling' : 'Choose your next adventure'} <span>✦</span></h2><p>{games.length} extraordinary worlds. Where will you go?</p></div><span className="game-count">Thoughtfully crafted. Ready to explore.</span></div>
+      <div className="game-category-cards" role="group" aria-label="Game categories">{GAME_GROUPS.map(item=><button key={item.id} className={group===item.id?'selected':''} aria-pressed={group===item.id} onClick={()=>{setCategory('All worlds');navigate(item.id==='all'?'all':'category/'+item.id);}}><Icon name={item.icon}/><span><strong>{item.name}</strong><small>{item.description}</small></span><b>{filterCatalog(games,{group:item.id}).length}</b></button>)}</div>
       <div className="filter-bar"><div className="filters" role="group" aria-label="Filter games">{[['all','grid','All games'],['favorites','heart','Favorites'],['recent','clock','Recent']].map(([id,ic,name]) => <button key={id} className={`filter ${view === id ? 'active' : ''}`} onClick={() => navigate(id)}><Icon name={ic} />{name}{id === 'all' ? <span className="filter-number">{games.length}</span> : null}</button>)}</div><div className="catalog-tools"><select value={category} onChange={e => setCategory(e.target.value)} aria-label="Game theme">{['All worlds',...new Set(games.map(g=>g.category))].map(c => <option key={c}>{c}</option>)}</select><select className="sort-select" value={sort} onChange={e => setSort(e.target.value)} aria-label="Sort games"><option>Featured</option><option>Name A–Z</option></select><label className="search-box"><Icon name="search" /><input type="search" aria-label="Search games" value={query} onChange={e => setQuery(e.target.value)} placeholder="Find your game…" /></label></div></div>
       <div className="game-grid">{list.map(g => <article key={g.id} className={`game-card premium-card ${g.id}`}>
         <div className="card-cover"><button className="card-play-area" onClick={() => navigate(`game/${g.id}`)} aria-label={`Play ${g.name}`}><img src={asset(g.id)} alt="" loading="lazy" /><span className={`card-tag ${g.id}`}>{g.tag}</span><span className="cover-title"><small>{g.subtitle}</small><strong>{g.title[0]}<em>{g.title[1]}</em></strong></span><span className="play-overlay"><span>▶</span></span></button><button className={`favorite-button ${favorites.includes(g.id) ? 'saved' : ''}`} onClick={() => toggleFavorite(g.id)} aria-label={`${favorites.includes(g.id) ? 'Remove' : 'Add'} ${g.name} ${favorites.includes(g.id) ? 'from' : 'to'} favorites`} aria-pressed={favorites.includes(g.id)}><Icon name="heart" /></button><span className="card-bonus-chip">✦ &nbsp; {g.meta}</span></div>

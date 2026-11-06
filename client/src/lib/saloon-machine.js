@@ -1,6 +1,8 @@
 const clamp=value=>Math.max(0,Math.min(1,value));
-const angleFor=progress=>clamp(progress)*Math.PI*.75;
-const camera=1700,cameraY=-400;
+const maxPullAngle = 40 * Math.PI / 180;
+export const mechanicalLeverAngle = progress => clamp(progress) * maxPullAngle;
+const gripY = -430;
+const camera=1700,cameraY=gripY;
 
 function project(point,angle){
   const y=point.y*Math.cos(angle)+point.z*Math.sin(angle);
@@ -10,13 +12,13 @@ function project(point,angle){
 }
 
 export function saloonLeverPose(progress){
-  const p=project({x:0,y:-430,z:0},angleFor(progress));
-  return {...p,y:Math.round(p.y)};
+  return project({x:0,y:gripY,z:0},mechanicalLeverAngle(progress));
 }
 
 export function saloonLeverProgress(startY,currentY,scale=1){
-  const target=170+(currentY-startY)/Math.max(.1,scale);
-  if(target<=170)return 0;
+  const uprightY = saloonLeverPose(0).y;
+  const target = uprightY + (currentY - startY) / Math.max(.1, scale);
+  if (target <= uprightY) return 0;
   if(target>=saloonLeverPose(1).y)return 1;
   let low=0,high=1;
   for(let i=0;i<20;i++){const mid=(low+high)/2;if(saloonLeverPose(mid).y<target)low=mid;else high=mid;}
@@ -24,7 +26,7 @@ export function saloonLeverProgress(startY,currentY,scale=1){
 }
 
 export function saloonLeverModel(progress){
-  const p=clamp(progress),angle=angleFor(p),faces=[];
+  const p=clamp(progress),angle=mechanicalLeverAngle(p),faces=[];
   function face(vertices,material,shade,index){
     const points=vertices.map(point=>project(point,angle));
     faces.push({points,material,shade,index,depth:points.reduce((n,v)=>n+v.depth,0)/points.length});
@@ -52,9 +54,43 @@ export function saloonLeverModel(progress){
   face(Array.from({length:8},(_,i)=>({x:Math.cos(i*Math.PI/4)*22,y:-538,z:Math.sin(i*Math.PI/4)*22})),'crystal',1,9);
   const top=project({x:0,y:-545,z:12},angle),bottom=project({x:0,y:-374,z:12},angle),center=project({x:0,y:-460,z:12},angle);
   const shaftTop=project({x:0,y:-385,z:13},angle),shaftBottom=project({x:0,y:-15,z:13},angle),shaftCenter=project({x:0,y:-200,z:13},angle);
-  const frontSide=Math.cos(angle)>=0?1:-1;
-  const engraving=Array.from({length:54},(_,i)=>{const t=i/53,x=Math.sin(t*Math.PI*8)*4;return project({x,y:-75-t*250,z:frontSide*Math.sqrt(10.5**2-x*x)},angle);});
-  return {engraving,pose:saloonLeverPose(p),faces:faces.sort((a,b)=>a.depth-b.depth),gearAngle:p*180,secondaryGearAngle:-p*288,
+  const engraving=Array.from({length:54},(_,i)=>{const t=i/53,x=Math.sin(t*Math.PI*8)*4;return project({x,y:-75-t*250,z:Math.sqrt(10.5**2-x*x)},angle);});
+  const gearAngle = angle * 240 / Math.PI;
+  return {engraving,pose:saloonLeverPose(p),faces:faces.sort((a,b)=>a.depth-b.depth),gearAngle,secondaryGearAngle:-gearAngle*1.6,
     shaftFront:{x:shaftCenter.x-72.5*shaftCenter.scale,y:Math.min(shaftTop.y,shaftBottom.y),width:145*shaftCenter.scale,height:Math.abs(shaftBottom.y-shaftTop.y),opacity:Math.max(0,Math.cos(angle))**1.8},
     front:{x:center.x-59*center.scale,y:Math.min(top.y,bottom.y),width:118*center.scale,height:Math.abs(bottom.y-top.y),opacity:Math.max(0,Math.cos(angle))**1.8}};
+}
+
+export const VELVET_LEVER_IMAGE = '/assets/velvet-lever-hardware.png';
+export const VELVET_LEVER_MOUNT_IMAGE = '/assets/velvet-lever-side-bearing.png';
+
+// Atlas measurements in pixels. The ruby and lower pin are aligned to the same brass axis.
+const rubyCrop = [120, 68, 300, 344];
+const shaftCrop = [214, 411, 116, 919];
+// The stem slips behind the side bearing before the atlas's original front-facing cap.
+const pinCrop = [214, 1328, 116, 62];
+const mountCrop = [361, 41, 524, 1102];
+const rubyCenter = 211, pinCenter = 1422;
+const atlasScale = -gripY / (pinCenter - rubyCenter);
+
+function atlasFrame(crop, axis, scale, y, height = crop[3] * scale) {
+  return { x: 100 + (crop[0] - axis) * scale, y, width: crop[2] * scale, height, viewBox: crop.join(' ') };
+}
+
+export function velvetLeverArtwork(progress) {
+  const angle = mechanicalLeverAngle(progress);
+  const alongArm = pixelY => project({ x: 0, y: (pixelY - pinCenter) * atlasScale, z: 0 }, angle);
+  const grip = alongArm(rubyCenter);
+  const gripScale = atlasScale * grip.scale;
+  const stemTop = grip.y + (shaftCrop[1] - rubyCenter) * gripScale;
+  const stemBottom = alongArm(shaftCrop[1] + shaftCrop[3]).y;
+  const pinTop = alongArm(pinCrop[1]).y;
+  const pinBottom = alongArm(pinCrop[1] + pinCrop[3]).y;
+  const mountScale = .15;
+  return {
+    grip: atlasFrame(rubyCrop, 272, gripScale, grip.y + (rubyCrop[1] - rubyCenter) * gripScale),
+    shaft: atlasFrame(shaftCrop, 272, atlasScale * alongArm(875).scale, stemTop, stemBottom - stemTop),
+    pin: atlasFrame(pinCrop, 272, atlasScale * alongArm(pinCenter).scale, pinTop, pinBottom - pinTop),
+    mount: atlasFrame(mountCrop, 662, mountScale, 600 + (mountCrop[1] - 620) * mountScale),
+  };
 }

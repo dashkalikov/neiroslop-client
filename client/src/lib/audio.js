@@ -1,10 +1,12 @@
-import {createAudioMixer} from './audio-mixer.js';
+import { createAudioMixer } from './audio-mixer.js';
 
-const mixer=createAudioMixer();
-export const attachMusic=media=>mixer.attachMusic(media);
-export const configureAudio=options=>mixer.configure(options);
-export const prepareSlotAudio=()=>mixer.prepareEffects();
-export const stopGameEffects=()=>mixer.stopEffects();
-export const playColumnLandings=(symbols,column,options)=>mixer.landColumn(symbols,column,options);
-export const playTone=kind=>mixer.playEffect(kind);
-
+// Один экземпляр держит музыку и эффекты для всех экранов.
+// Переименовываем экспорты, чтобы компоненты сохранили прежние импорты.
+export const {
+  attachMusic,
+  configure: configureAudio,
+  prepareEffects: prepareSlotAudio,
+  stopEffects: stopGameEffects,
+  landColumn: playColumnLandings,
+  playEffect: playTone,
+} = createAudioMixer();

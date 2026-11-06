@@ -4,15 +4,15 @@ import { useLounge } from '../LoungeContext.jsx';
 import { api } from '../lib/api.js';
 import { INITIAL_GRID, nextBet, PAYLINES, CLASSIC_PAYLINES, parseWager, autoAction, MIN_BET, MAX_BET } from '../lib/game-state.js';
 import { createAutoSpin } from '../lib/auto-spin.js';
+import { mechanicalCabinets } from '../lib/mechanical-cabinets.js';
+import { VELVET_LEVER_IMAGE, VELVET_LEVER_MOUNT_IMAGE } from '../lib/saloon-machine.js';
 import { playTone, playColumnLandings, prepareSlotAudio, stopGameEffects } from '../lib/audio.js';
 import Icon from './Icon.jsx';
 import Symbol from './Symbol.jsx';
-import Lever from './Lever.jsx';
 import CoinRain from './CoinRain.jsx';
-import { CoinSpill } from './WinToken.jsx';
-import { ClassicMarquee, ClassicApron, MineDetails } from './CabinetDetails.jsx';
+import { MineDetails } from './CabinetDetails.jsx';
 import BassDetails from './BassDetails.jsx';
-import SaloonMachine from './SaloonMachine.jsx';
+import MechanicalCabinet from './SaloonMachine.jsx';
 
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const symbols = ['gem','star','orb','crown','leaf','wild','scatter'];
@@ -29,11 +29,10 @@ export default function GameScreen({ game, navigate }) {
   const fishing=game.id==='bigbass';
   const multiplier = fishing ? (bonus?.feature?.batches?.[0]?.multiplier||1) : rules?.multiplier || game.multiplier || (game.id === 'neon' ? 2 : 1);
   const paylines = game.paylines || (reelCount === 3 ? CLASSIC_PAYLINES : PAYLINES);
-  const classic = game.id === 'royal';
-  const saloon = game.id === 'saloon';
+  const cabinetSkin = mechanicalCabinets[game.id];
   const mining = Boolean(game.cascading);
   const freeSpins = bonus?.remaining || 0;
-  const [betText, setBetText] = useState(String(freeSpins ? bonus.bet : 20));
+  const [betText, setBetText] = useState(String(freeSpins ? bonus.bet : player?.preferences?.defaultBet||20));
   const bet = freeSpins ? bonus.bet : parseWager(betText);
   const [grid, setGrid] = useState(() => game.initialGrid || INITIAL_GRID.slice(0,reelCount));
   const [moneyFish,setMoneyFish]=useState([]);
@@ -41,7 +40,7 @@ export default function GameScreen({ game, navigate }) {
   const [stopped, setStopped] = useState(reelCount);
   const [result, setResult] = useState(null);
   const [lastWin, setLastWin] = useState(0);
-  const [message, setMessage] = useState((classic||saloon) ? 'READY · PULL HANDLE OR PRESS SPIN' : 'Your next escape begins with a spin.');
+  const [message, setMessage] = useState(cabinetSkin ? 'READY · PULL HANDLE OR PRESS SPIN' : 'Your next escape begins with a spin.');
   const [showLines, setShowLines] = useState(false);
   const [celebration, setCelebration] = useState(null);
   const [assetsReady, setAssetsReady] = useState(false);
@@ -80,14 +79,20 @@ export default function GameScreen({ game, navigate }) {
 
   useEffect(() => {
     const sources=[game.symbolAsset||asset(game.id,'symbols')];
-    if(saloon)sources.push('/assets/saloon-cabinet.png','/assets/saloon-crystal-grip.png','/assets/saloon-arm-metal.png',asset(game.id));
+    if (cabinetSkin) {
+      sources.push(cabinetSkin.housing, asset(game.id));
+      if (cabinetSkin.grip === 'ruby') sources.push(VELVET_LEVER_IMAGE, VELVET_LEVER_MOUNT_IMAGE);
+      else sources.push('/assets/saloon-arm-metal.png', '/assets/saloon-crystal-grip.png');
+    }
     let cancelled = false;
     Promise.all(sources.map(source=>{const image=new Image();image.src=source;return image.decode();})).then(() => { if (!cancelled) setAssetsReady(true); }).catch(() => {
       if (!cancelled) notify('The artwork could not load. Refresh to try again.',true);
     });
     return () => { cancelled = true; };
-  }, [game.id,game.symbolAsset,notify,saloon]);
+  }, [game.id,game.symbolAsset,notify,cabinetSkin]);
   useEffect(() => { if (freeSpins) setBetText(String(bonus.bet)); }, [freeSpins,bonus?.bet]);
+  const preferenceApplied=useRef(Boolean(player));
+  useEffect(()=>{if(!preferenceApplied.current&&player){preferenceApplied.current=true;if(!freeSpins&&!busyRef.current)setBetText(String(player.preferences?.defaultBet||20));}},[player,freeSpins]);
   useEffect(() => { if (!sound) stopGameEffects(); }, [sound]);
   useEffect(() => {
     if (!celebration || !autoEnabled) return;
@@ -118,15 +123,15 @@ export default function GameScreen({ game, navigate }) {
     if (!freeSpins && player.balance < bet) { notify('Lower your wager or claim your daily gift to keep exploring.',true); return false; }
     busyRef.current = true; setSpinning(true); setBusy(true); setStopped(0);
     stopGameEffects(); setCascade(0); setCollected(0); setCascadeFrame(null); setTumbling(false);
-    setMessage((classic||saloon) ? 'REELS IN MOTION' : 'A little anticipation…'); setResult(null); setShowLines(false);
-    if (sound && (classic||saloon)) playTone('lever');
+    setMessage(cabinetSkin ? 'REELS IN MOTION' : 'A little anticipation…'); setResult(null); setShowLines(false);
+    if (sound && cabinetSkin) playTone('lever');
     const started = Date.now();
     requestRef.current ||= {game:game.id,bet,requestId:crypto.randomUUID()};
     try {
       const data = await api('spin',requestRef.current);
       requestRef.current = null;
       const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      await pause(Math.max(0,(reduced ? 0 : turbo ? 350 : (classic||saloon) ? 1350 : 1050)-(Date.now()-started)));
+      await pause(Math.max(0,(reduced ? 0 : turbo ? 350 : cabinetSkin ? 1350 : 1050)-(Date.now()-started)));
       if (!mounted.current) { await reload(); return false; }
       setGrid(data.grid); setMoneyFish(data.moneyFish||[]);
       for (let c=0;c<data.grid.length;c++) {
@@ -171,7 +176,7 @@ export default function GameScreen({ game, navigate }) {
       } else if (data.payout) {
         setMessage(fishing&&data.collectionPayout?`Catch collected · +${formatCoins(data.payout)} coins · ${data.multiplier}× fish value`:mining ? `${data.cascadeCount} golden ${data.cascadeCount===1?'cascade':'cascades'} · +${formatCoins(data.payout)} coins` : `${data.lines.length} winning ${data.lines.length===1?'line':'lines'} · +${formatCoins(data.payout)} coins${data.multiplier>1?` · ${data.multiplier}× bonus`:''}`);
         if (data.payout>=data.bet*10) setCelebration({type:'win',amount:data.payout});
-      } else setMessage(data.freeSpins ? 'Your next spin is on us.' : (classic||saloon) ? 'READY · PULL HANDLE TO PLAY' : 'Every spin is a new story. Ready for yours?');
+      } else setMessage(data.freeSpins ? 'Your next spin is on us.' : cabinetSkin ? 'READY · PULL HANDLE TO PLAY' : 'Every spin is a new story. Ready for yours?');
       if (latest.current.sound && (data.payout || data.bonusTriggered)) { playTone('win'); if (data.payout) playTone('coins'); }
       return true;
     } catch (error) {
@@ -213,27 +218,24 @@ export default function GameScreen({ game, navigate }) {
       <div className="stage-navigation"><button className="back-button" disabled={spinning} onClick={()=>navigate('all')}><span>←</span> Back to lobby</button><span className="stage-collection">{game.subtitle}</span><div><button className="icon-button" onClick={()=>setModal({kind:'guide'})} aria-label="How to play"><Icon name="info" /></button><button className="icon-button" onClick={()=>setSound(!sound)} aria-label={sound?'Mute sound':'Enable sound'} aria-pressed={sound}><Icon name={sound?'volume':'mute'} /></button></div></div>
       <div className="game-logo"><span className="logo-ornament">✧ ───── ✦ ───── ✧</span><h1><span>{game.title[0]}</span><em>{game.title[1]}</em></h1><p>{game.copy}</p>{fishing?<span className="recreation-label">VIRTUAL-COIN RECREATION · ORIGINAL ARTWORK</span>:null}</div>
       <div className={`bonus-ribbon ${freeSpins?'active':''}`}><span>✦</span>{freeSpins?<strong>{freeSpins} FREE SPINS REMAINING {multiplier>1?`· ${multiplier}× WINS`:''}</strong>:<><strong>{game.label}</strong><span className="ribbon-divider" /><span>{fishing?'3 / 4 / 5 scatters → 10 / 15 / 20 free spins':`3 bonus symbols unlock ${bonusLength} free spins`}</span></>}<span>✦</span></div>
-      {saloon?<SaloonMachine game={game} reels={reelDisplay} state={{spinning,assetsReady,canStart,locked,blocked:Boolean(celebration)||autoEnabled,freeSpins,bet,betText:freeSpins?String(bonus.bet):betText,balance:player?.balance??null,lastWin,message,hasWin,result,showLines,turbo}}
+      {cabinetSkin?<MechanicalCabinet game={game} skin={cabinetSkin} reels={reelDisplay} state={{spinning,assetsReady,canStart,locked,blocked:Boolean(celebration)||autoEnabled,freeSpins,bonusLength,multiplier,bet,betText:freeSpins?String(bonus.bet):betText,balance:player?.balance??null,lastWin,message,hasWin,result,showLines,turbo,autoEnabled,autoRounds}}
         onSpin={()=>spin('button')} onBet={setBetText} onLines={()=>setShowLines(!showLines)} onTurbo={()=>setTurbo(!turbo)}
-        onPaytable={()=>setModal({kind:'paytable',game,bet:bet||20})} onHistory={()=>setModal({kind:'history'})} autoButton={stopAutoButton}/>:<div className={`cabinet-frame ${classic?'classic-frame':''} ${classic && spinning?'machine-shaking':''} ${tumbling?'tumbling':''}`}>
+        onPaytable={()=>setModal({kind:'paytable',game,bet:bet||20})} onHistory={()=>setModal({kind:'history'})} autoButton={stopAutoButton}/>:<div className={`cabinet-frame ${tumbling?'tumbling':''}`}>
         <div className={`slot-cabinet ${hasWin?'has-win':''}`}>
-          {classic || mining ? <div className="cabinet-rivets" aria-hidden="true">{Array.from({length:8},(_,i)=><i key={i} />)}</div> : null}
+          {mining ? <div className="cabinet-rivets" aria-hidden="true">{Array.from({length:8},(_,i)=><i key={i} />)}</div> : null}
           {!assetsReady?<div className="cabinet-loading" role="status"><span>✦</span>Preparing your world…</div>:null}
-          {classic?<ClassicMarquee game={game} winning={hasWin} />:mining?<MineDetails cascades={cascade} collected={collected} freeSpins={freeSpins} />:null}
-          {fishing?<BassDetails game={game} feature={bonus?.feature||result?.feature} freeSpins={freeSpins} result={result}/>:null}<div className="cabinet-top"><span>✧</span><div /><strong>{freeSpins?'BONUS ROUND':classic?'3 REELS · 5 PAYLINES · ALL WINS LEFT TO RIGHT':fishing?'FIVE REELS · TEN PAYLINES · FISH & COLLECT':`${reelCount===3?'THREE':'FIVE'} REELS OF POSSIBILITY`}</strong><div /><span>✧</span></div>
+          {mining?<MineDetails cascades={cascade} collected={collected} freeSpins={freeSpins} />:null}
+          {fishing?<BassDetails game={game} feature={bonus?.feature||result?.feature} freeSpins={freeSpins} result={result}/>:null}<div className="cabinet-top"><span>✧</span><div /><strong>{freeSpins?'BONUS ROUND':fishing?'FIVE REELS · TEN PAYLINES · FISH & COLLECT':`${reelCount===3?'THREE':'FIVE'} REELS OF POSSIBILITY`}</strong><div /><span>✧</span></div>
           {reelDisplay}
-          {classic ? <div className="reel-index-rail" aria-hidden="true"><span>REEL I</span><b>✦</b><span>REEL II</span><b>✦</b><span>REEL III</span></div> : null}
           <div className={`result-marquee ${hasWin?'winning-message':''}`} role="status" aria-live="polite"><span>✦</span>{message}<span>✦</span></div>
-          <div className="cabinet-controls"><div className="game-stat"><small>{classic?'CREDITS':'VIRTUAL BALANCE'}</small><strong><span className="stat-coin">✦</span>{player?formatCoins(player.balance):'—'}</strong></div>
-            <div className="bet-control"><label htmlFor="coin-wager">{freeSpins?'BONUS BET · LOCKED':classic?'BET':'YOUR WAGER'}</label><div className={`bet-stepper ${bet===null?'invalid':''}`}><button aria-label="Lower bet" disabled={locked||bet===MIN_BET} onClick={()=>setBetText(String(nextBet(bet||20,-1)))}>−</button><input id="coin-wager" aria-label="Wager in coins" type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" maxLength={7} value={freeSpins?String(bonus.bet):betText} disabled={locked} onChange={e=>setBetText(e.target.value)} aria-invalid={bet===null} aria-describedby="wager-help" /><button aria-label="Raise bet" disabled={locked||bet===MAX_BET} onClick={()=>setBetText(String(nextBet(bet||20,1)))}>+</button></div></div>
-            <button className="spin-button" onClick={()=>spin('button')} disabled={spinning||!canStart||Boolean(celebration)||autoEnabled}><Icon name="spin" /><span>{spinning?'SPINNING':freeSpins?'FREE SPIN':'SPIN'}</span><small>{freeSpins?'ON THE HOUSE':classic?'OR PULL THE LEVER':'LET’S FIND SOME MAGIC'}</small></button>
-            <div className="game-stat last-win"><small>{classic?'WIN':'LAST WIN'}</small><strong>{formatCoins(lastWin)}</strong></div>
+          <div className="cabinet-controls"><div className="game-stat"><small>VIRTUAL BALANCE</small><strong><span className="stat-coin">✦</span>{player?formatCoins(player.balance):'—'}</strong></div>
+            <div className="bet-control"><label htmlFor="coin-wager">{freeSpins?'BONUS BET · LOCKED':'YOUR WAGER'}</label><div className={`bet-stepper ${bet===null?'invalid':''}`}><button aria-label="Lower bet" disabled={locked||bet===MIN_BET} onClick={()=>setBetText(String(nextBet(bet||20,-1)))}>−</button><input id="coin-wager" aria-label="Wager in coins" type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" maxLength={7} value={freeSpins?String(bonus.bet):betText} disabled={locked} onChange={e=>setBetText(e.target.value)} aria-invalid={bet===null} aria-describedby="wager-help" /><button aria-label="Raise bet" disabled={locked||bet===MAX_BET} onClick={()=>setBetText(String(nextBet(bet||20,1)))}>+</button></div></div>
+            <button className="spin-button" onClick={()=>spin('button')} disabled={spinning||!canStart||Boolean(celebration)||autoEnabled}><Icon name="spin" /><span>{spinning?'SPINNING':freeSpins?'FREE SPIN':'SPIN'}</span><small>{freeSpins?'ON THE HOUSE':'LET’S FIND SOME MAGIC'}</small></button>
+            <div className="game-stat last-win"><small>LAST WIN</small><strong>{formatCoins(lastWin)}</strong></div>
           </div>
           <div className="round-options"><span id="wager-help" className={bet===null?'wager-error':''}>{bet===null?'Enter a whole number from 1 to 10,000.':autoEnabled?`Auto-spin on · ${autoRounds} rounds completed. Stop whenever you like.`:freeSpins?'Your triggering wager is locked for bonus spins.':'Type any whole-coin wager from 1 to 10,000.'}</span>{stopAutoButton}</div>
           <div className="cabinet-bottom"><div><button onClick={()=>setModal({kind:'paytable',game,bet:bet||20})}><Icon name="book" />Paytable</button><button className={showLines?'enabled':''} onClick={()=>setShowLines(!showLines)} aria-pressed={showLines}><Icon name="slots" />{paylines.length} paylines</button><button className={turbo?'enabled':''} onClick={()=>setTurbo(!turbo)} aria-pressed={turbo}><Icon name="bolt" />Quick spin</button></div><button onClick={()=>setModal({kind:'history'})}><Icon name="clock" />Spin history</button></div>
-          {classic ? <ClassicApron /> : null}
         </div>
-        {classic?<><Lever disabled={spinning||!canStart||Boolean(celebration)||autoEnabled} spinning={spinning} onPull={()=>spin('lever')} /><div className="coin-tray" aria-hidden="true"><div className="coin-slot" /><span>LUCKY LOUNGE · VIRTUAL TOKENS</span>{result?.payout&&!spinning?<CoinSpill key={result.id}/>:null}</div></>:null}
       </div>}
       <div className="stage-bottom"><span>100% VIRTUAL COINS <i>✦</i> A LITTLE ESCAPE FROM THE EVERYDAY</span><span><kbd>SPACE</kbd> TO SPIN</span></div>
       {result?.payout && !spinning ? <CoinRain key={`coins-${result.id}`} /> : null}

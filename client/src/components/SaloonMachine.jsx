@@ -19,48 +19,68 @@ function CabinetLighting(){
   </div>;
 }
 
-export default function SaloonMachine({game,reels,state,onSpin,onBet,onLines,onTurbo,onPaytable,onHistory,autoButton}){
+const velvetLampRows = [20.5, 26.8, 33.1, 39.4, 45.7, 52, 58.3, 64.6, 70.9];
+
+function VelvetLighting() {
+  return <div className="saloon-lighting velvet-lighting" aria-hidden="true">
+    <span className="velvet-crown-glow" />
+    <span className="velvet-reel-halo" />
+    {velvetLampRows.map((y, index) => <i key={'left-'+y} className="saloon-bulb"
+      style={{ left: '7.9%', top: y+'%', '--phase': index*.22+'s' }} />)}
+    {velvetLampRows.map((y, index) => <i key={'right-'+y} className="saloon-bulb"
+      style={{ left: '84.1%', top: y+'%', '--phase': index*.22+.14+'s' }} />)}
+  </div>;
+}
+
+export default function MechanicalCabinet({game,skin,reels,state,onSpin,onBet,onLines,onTurbo,onPaytable,onHistory,autoButton}){
   const [zoom,setZoom]=useState(false);
   const view=useRef(null);
-  const {spinning,assetsReady,canStart,locked,blocked,freeSpins,bet,betText,balance,lastWin,message,hasWin,result,showLines,turbo}=state;
+  const {spinning,assetsReady,canStart,locked,blocked,freeSpins,bonusLength,multiplier,bet,betText,balance,lastWin,message,hasWin,result,showLines,turbo}=state;
   const disabled=spinning||!canStart||blocked;
+  const velvet = skin.grip === 'ruby';
+  const multiplierLabel = multiplier > 1 ? ' · '+multiplier+'×' : '';
   function toggleZoom(){
     setZoom(!zoom);
     requestAnimationFrame(()=>{if(view.current)view.current.scrollLeft=(view.current.scrollWidth-view.current.clientWidth)/2;});
   }
-  return <div className="saloon-layout">
+  return <div className={`saloon-layout ${velvet ? 'velvet-layout' : ''}`}>
     <div className="saloon-machine-wrap">
       <div ref={view} className={'saloon-cabinet-view '+(zoom?'enlarged':'')}>
         <div className={'saloon-machine '+(spinning?'saloon-rumbling ':'')+(hasWin&&!spinning?'saloon-winning':'')}>
-          <img className="saloon-housing" src="/assets/saloon-cabinet.png" alt="Saloon Luck: engraved brass cabinet, glass lamps, curved reel glass and an iridescent crystal handle" fetchpriority="high"/>
-          <CabinetLighting/>
+          <img className="saloon-housing" src={skin.housing} alt={skin.artDescription} fetchpriority="high"/>
+          {velvet ? <VelvetLighting /> : <CabinetLighting />}
+          {velvet ? <div className="velvet-marquee" aria-hidden="true">
+            <small>THE ART DECO COLLECTION</small>
+            <strong>VELVET SEVENS</strong>
+            <span>MODEL 07 <i>◆</i> TOKEN PLAY</span>
+          </div> : null}
           <div className="saloon-live-glass">
-            <span className="saloon-glass-title">SALOON LUCK · MODEL 1901</span>
-            <div className="saloon-mini-paytable"><span><Symbol game={game} type="gem"/><b>3 MATCH<small>2× BET</small></b></span><span><Symbol game={game} type="wild"/><b>3 WILDS<small>10× BET</small></b></span><span><Symbol game={game} type="scatter"/><b>3 CRYSTALS<small>8 FREE · 2×</small></b></span></div>
+            <span className="saloon-glass-title">{skin.marquee}</span>
+            <div className="saloon-mini-paytable"><span><Symbol game={game} type="gem"/><b>3 MATCH<small>2× BET</small></b></span><span><Symbol game={game} type="wild"/><b>3 WILDS<small>10× BET</small></b></span><span><Symbol game={game} type="scatter"/><b>3 {skin.scatterLabel.toUpperCase()}<small>{bonusLength} FREE{multiplierLabel}</small></b></span></div>
             <div className="saloon-ledger"><span>CREDITS<b>{balance===null?'—':formatCoins(balance)}</b></span><span>BET<b>{bet??'—'}</b></span><span>WIN<b>{formatCoins(lastWin)}</b></span></div>
             <div className={'saloon-round-status '+(hasWin?'won':'')} role="status" aria-live="polite">{message}</div>
             <div className="saloon-info-cover" aria-hidden="true"><i/></div>
           </div>
           <div className="saloon-live-reels">{reels}<div className="saloon-reel-glass" aria-hidden="true"><i className="saloon-glass-glint"/><i className="saloon-glass-edge"/></div></div>
           <div className="saloon-console" aria-label="Cabinet control panel">
-            <div className="saloon-status-lamps" aria-hidden="true">{['READY','WILD','BONUS','WIN','PLAY'].map((label,i)=><span key={label} className={(!spinning&&i===0)||(i===2&&freeSpins)||(i===3&&hasWin)||(i===4&&spinning)?'lit':''} style={{'--lamp':['#f8ad6c','#f2a0d3','#ae8df2','#91efba','#83d8ef'][i]}}><i/>{label}</span>)}</div>
+            <div className="saloon-status-lamps" aria-hidden="true">{['READY','WILD','BONUS','WIN','PLAY'].map((label,i)=><span key={label} className={(!spinning&&i===0)||(i===2&&freeSpins)||(i===3&&hasWin)||(i===4&&spinning)?'lit':''} style={{'--lamp':(velvet?['#ffd184','#f5a3b2','#ff7d94','#ffe09f','#ffe2be']:['#f8ad6c','#f2a0d3','#ae8df2','#91efba','#83d8ef'])[i]}}><i/>{label}</span>)}</div>
             <div className="saloon-console-main">
               <div className={'saloon-wager '+(bet===null?'invalid':'')}><button aria-label="Lower bet" disabled={locked||bet===MIN_BET} onClick={()=>onBet(String(nextBet(bet||20,-1)))}>−</button><label htmlFor="saloon-wager"><span>{freeSpins?'BONUS BET':'BET'}</span><input id="saloon-wager" aria-label="Wager in coins" inputMode="numeric" pattern="[0-9]*" type="text" autoComplete="off" maxLength={7} value={betText} disabled={locked} onChange={e=>onBet(e.target.value)} aria-invalid={bet===null} aria-describedby="saloon-wager-help"/></label><button aria-label="Raise bet" disabled={locked||bet===MAX_BET} onClick={()=>onBet(String(nextBet(bet||20,1)))}>+</button></div>
-              <button className="saloon-start cabinet-key green-key" disabled={disabled} onClick={onSpin} aria-label={spinning?'Reels spinning':freeSpins?'Play free spin':'Start machine'}><span>{spinning?'SPINNING':freeSpins?'FREE SPIN':'START'}</span><small>{freeSpins?freeSpins+' LEFT · 2×':'PULL OR PRESS'}</small></button>
+              <button className="saloon-start cabinet-key green-key" disabled={disabled} onClick={onSpin} aria-label={spinning?'Reels spinning':freeSpins?'Play free spin':'Start machine'}><span>{spinning?'SPINNING':freeSpins?'FREE SPIN':'START'}</span><small>{freeSpins?freeSpins+' LEFT'+multiplierLabel:'PULL OR PRESS'}</small></button>
               <div className="saloon-auto">{autoButton}</div>
               <button className="cabinet-key ruby-key" disabled={locked} onClick={()=>onBet(String(MAX_BET))} title="Set wager to 10,000 coins" aria-label="Maximum bet">MAX BET</button>
             </div>
             <div className="saloon-console-buttons"><button className="cabinet-key" onClick={onLines} aria-pressed={showLines}><Icon name="slots"/>5 LINES</button><button className="cabinet-key" onClick={onPaytable}><Icon name="book"/>RULES</button><button className="cabinet-key" onClick={onTurbo} aria-pressed={turbo}><Icon name="bolt"/>QUICK</button><button className="cabinet-key" onClick={onHistory}><Icon name="clock"/>HISTORY</button></div>
-            <span id="saloon-wager-help" className={bet===null?'saloon-wager-error':''}>{bet===null?'WHOLE COINS ONLY · 1–10,000':freeSpins?'CRYSTAL RUSH · TRIGGERING BET LOCKED':'VIRTUAL COINS · WINS CREDITED AUTOMATICALLY'}</span>
+            <span id="saloon-wager-help" className={bet===null?'saloon-wager-error':''}>{bet===null?'WHOLE COINS ONLY · 1–10,000':freeSpins?skin.bonusName.toUpperCase()+' · TRIGGERING BET LOCKED':'VIRTUAL COINS · WINS CREDITED AUTOMATICALLY'}</span>
           </div>
-          <div className="saloon-crystal-lever"><SaloonLever disabled={disabled} spinning={spinning} onPull={onSpin}/></div>
+          <div className="saloon-crystal-lever"><SaloonLever grip={skin.grip} disabled={disabled} spinning={spinning} onPull={onSpin}/></div>
           {result?.payout&&!spinning?<div className="saloon-payout" key={result.id} aria-hidden="true"><CoinSpill compact/></div>:null}
-          {!assetsReady?<div className="saloon-preparing" role="status">Lighting the saloon…</div>:null}
+          {!assetsReady?<div className="saloon-preparing" role="status">{skin.preparing}</div>:null}
         </div>
       </div>
-      <div className="saloon-machine-tools"><span>BRASS. GLASS. A LITTLE GOOD FORTUNE.</span><button onClick={toggleZoom} aria-pressed={zoom}><Icon name="search"/>{zoom?'Fit cabinet':'Enlarge cabinet'}</button></div>
-      <p className="saloon-play-note"><kbd>SPACE</kbd> OR PULL THE CRYSTAL LEVER · 3 CRYSTALS = 8 FREE SPINS WITH 2× WINS</p>
+      <div className="saloon-machine-tools"><span>{skin.footer}</span><button onClick={toggleZoom} aria-pressed={zoom}><Icon name="search"/>{zoom?'Fit cabinet':'Enlarge cabinet'}</button></div>
+      <p className="saloon-play-note"><kbd>SPACE</kbd> OR PULL THE {skin.grip.toUpperCase()} LEVER · 3 {skin.scatterLabel.toUpperCase()} = {bonusLength} FREE SPINS{multiplier > 1 ? ' WITH '+multiplier+'× WINS' : ''}</p>
     </div>
-    <SaloonControlPanel state={state} onSpin={onSpin} onBet={onBet} onLines={onLines} onTurbo={onTurbo} onPaytable={onPaytable} onHistory={onHistory} autoButton={autoButton}/>
+    <SaloonControlPanel game={game} skin={skin} state={state} onSpin={onSpin} onBet={onBet} onLines={onLines} onTurbo={onTurbo} onPaytable={onPaytable} onHistory={onHistory} autoButton={autoButton}/>
   </div>;
 }
