@@ -1,77 +1,22 @@
-import {useEffect,useRef,useState} from 'react';
+import {useEffect,useState} from 'react';
 import {WHEEL_PARTS} from '../lib/roulette-model.js';
 import RouletteModelViewport from './RouletteModelViewport.jsx';
 import Modal from './Modal.jsx';
 import Icon from './Icon.jsx';
 
-export default function RouletteWheel({angles,spinning,duration,number,locked=false}){
+export default function RouletteWheel({angles,spinning,duration,number,locked=false,fullScreen,fullscreenButton,onToggleFullscreen}){
   const [inspect,setInspect]=useState(false),[overhead,setOverhead]=useState(false),[exploded,setExploded]=useState(false),[part,setPart]=useState(null),[reset,setReset]=useState(0),[isolated,setIsolated]=useState(false);
   const [reflections, setReflections] = useState(() => {
     try { return localStorage.getItem('lounge-wheel-reflections') !== 'off'; }
     catch { return true; }
   });
-  const [nativeFullscreen, setNativeFullscreen] = useState(false);
-  const [expanded, setExpanded] = useState(false);
-  const display = useRef(null);
-  const fullscreenButton = useRef(null);
-  const fullScreen = nativeFullscreen || expanded;
-
   useEffect(() => {
     try { localStorage.setItem('lounge-wheel-reflections', reflections ? 'on' : 'off'); }
     catch { /* The switch still works for this visit. */ }
   }, [reflections]);
 
-  useEffect(() => {
-    const syncFullscreen = () => setNativeFullscreen(document.fullscreenElement === display.current);
-    document.addEventListener('fullscreenchange', syncFullscreen);
-    return () => document.removeEventListener('fullscreenchange', syncFullscreen);
-  }, []);
-
-  useEffect(() => {
-    if (!expanded) return;
-    const firstButton = display.current.querySelector('button');
-    const lastButton = fullscreenButton.current;
-    lastButton.focus({ preventScroll: true });
-    function handleKey(event) {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setExpanded(false);
-        lastButton.focus({ preventScroll: true });
-      } else if (event.key === 'Tab') {
-        const edge = event.shiftKey ? firstButton : lastButton;
-        if (document.activeElement === edge || !display.current.contains(document.activeElement)) {
-          event.preventDefault();
-          (event.shiftKey ? lastButton : firstButton).focus();
-        }
-      }
-    }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [expanded]);
-
-  async function toggleFullscreen() {
-    const element = display.current;
-    if (document.fullscreenElement === element) {
-      await document.exitFullscreen().catch(() => {});
-      return;
-    }
-    if (expanded) {
-      setExpanded(false);
-      return;
-    }
-    if (document.fullscreenEnabled && element.requestFullscreen) {
-      try {
-        await element.requestFullscreen();
-        return;
-      } catch { /* Use the in-page full-screen view when the browser blocks native fullscreen. */ }
-    }
-    setExpanded(true);
-  }
-
   return <div className="roulette-physical-wheel" data-reflections={reflections}>
-    <div ref={display} className={`roulette-wheel-display${expanded ? ' is-expanded' : ''}`}
-      role={expanded ? 'dialog' : undefined} aria-modal={expanded || undefined}
-      aria-label={expanded ? 'Full-screen roulette wheel' : undefined}>
+    <div className="roulette-wheel-display">
       <div className="roulette-wheel-viewbar">
         <span><i/> THE RIVIERA WHEEL</span>
         <div className="roulette-view-actions">
@@ -81,7 +26,7 @@ export default function RouletteWheel({angles,spinning,duration,number,locked=fa
           <button aria-label="Wheel reflections" aria-pressed={reflections} onClick={() => setReflections(!reflections)}>
             <Icon name="sun"/>Reflections {reflections ? 'on' : 'off'}
           </button>
-          <button ref={fullscreenButton} aria-label="Full-screen wheel" aria-pressed={fullScreen} onClick={toggleFullscreen}>
+          <button ref={fullscreenButton} aria-label="Full-screen wheel" aria-pressed={fullScreen} onClick={onToggleFullscreen}>
             <Icon name={fullScreen ? 'minimize' : 'expand'}/>{fullScreen ? 'Exit full screen' : 'Full screen'}
           </button>
         </div>
