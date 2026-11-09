@@ -9,4 +9,5 @@ export const {
   stopEffects: stopGameEffects,
   landColumn: playColumnLandings,
   playEffect: playTone,
+  rouletteRoll: createRouletteRoll,
 } = createAudioMixer();

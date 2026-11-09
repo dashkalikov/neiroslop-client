@@ -70,7 +70,9 @@ export function createRouletteRenderer(element,{angles,interactive=false,onReady
       else{motion=null;pose={...next,ballRadius:2.43,ballHeight:.335};}
       invalidate();
     },
-    setView({exploded=false,overhead=false,selected=null,isolated=false,reset=false}){
+    setView({exploded=false,overhead=false,selected=null,isolated=false,reset=false,reflections=true}){
+      scene.environmentIntensity = reflections ? .7 : .32;
+      model.setReflections(reflections);
       const isolate=isolated&&selected;
       targetExplosion=exploded&&!isolate?1:0;model.highlight(selected);model.isolate(isolate);
       const to=overhead?new THREE.Vector3(.01,exploded?20:14.5,.01):new THREE.Vector3(interactive?6.3:0,exploded?15:11.2,exploded?15:9.1);

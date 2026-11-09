@@ -145,3 +145,31 @@ test('mix and soundtrack survive reload while older master volume is preserved',
   assert.equal(safe.soundtrack,'lounge');
   assert.equal(readAudioPreferences({getItem(){throw new Error('disabled');}}).volume,.55);
 });
+
+test('the roulette loop tracks speed and uses the game effects channel', async () => {
+  const { mixer, effects, music } = await setup();
+  music.currentTime = 21;
+  const roll = mixer.rouletteRoll();
+  roll.update({ gain: .5, rate: 1.6 });
+  const [media] = effects;
+  assert.match(media.src, /roulette-roll\.wav$/);
+  assert.equal(media.loop, true);
+  assert.equal(media.playbackRate, 1.6);
+  const launchVolume = media.volume;
+  roll.update({ gain: .2, rate: .9 });
+  assert.equal(effects.length, 1);
+  assert.equal(media.playbackRate, .9);
+  assert.ok(media.volume < launchVolume);
+  mixer.configure({ effectsVolume: 0 });
+  roll.update({ gain: .2, rate: .9 });
+  assert.equal(media.paused, true);
+  assert.equal(music.paused, false);
+  mixer.configure({ effectsVolume: .4 });
+  roll.update({ gain: .2, rate: .9 });
+  assert.equal(effects.length, 1);
+  assert.equal(media.paused, false);
+  assert.ok(Math.abs(media.volume - .064) < 1e-9);
+  roll.stop();
+  assert.equal(media.paused, true);
+  assert.equal(music.currentTime, 21);
+});

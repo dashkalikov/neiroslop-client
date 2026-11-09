@@ -74,8 +74,30 @@ def lever() -> list[float]:
             for i in range(int(RATE*.3))]
 
 
+def roulette_roll() -> list[float]:
+    rng = Random(304)
+    length, overlap = RATE * 2, RATE // 14
+    fast = slow = phase = 0.0
+    samples = []
+    for i in range(length + overlap):
+        t = i / RATE
+        noise = rng.uniform(-1, 1)
+        fast += .24 * (noise - fast)
+        slow += .028 * (noise - slow)
+        phase = (phase + (25 + 2.5 * sin(2 * pi * 3 * t)) / RATE) % 1
+        contact = exp(-phase * 9) * (.17 * sin(2 * pi * 790 * t) + .09 * sin(2 * pi * 1380 * t))
+        samples.append(.65 * (fast - slow) + contact)
+
+    # Overlap the tail into the head so looping has no reset click.
+    for i in range(overlap):
+        mix = i / overlap
+        samples[i] = samples[length + i] * (1 - mix) + samples[i] * mix
+    return samples[:length]
+
+
 if __name__ == '__main__':
     save('coin-cascade.wav', coins())
     save('reel-mechanism.wav', reels())
     save('lever-clunk.wav', lever())
-    print('Created three original slot sound effects in', DESTINATION)
+    save('roulette-roll.wav', roulette_roll())
+    print('Created original casino sound effects in', DESTINATION)

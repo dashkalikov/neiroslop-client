@@ -2,6 +2,10 @@
 
 Open Riviera Roulette, then **Explore the craftsmanship** beneath the wheel. The viewer supports assembled and exploded views, selection and isolation of individual parts, drag-to-orbit, scroll/pinch zoom, overhead viewing and reset. The same geometry is used in the playable game.
 
+Above the playable wheel, choose **Full screen** to enlarge the same wheel and **Exit full screen** or **Escape** to return. The app uses the browser's [Fullscreen API](https://fullscreen.spec.whatwg.org/) when available and can otherwise expand the wheel within the page.
+
+In overhead or table view, switch **Reflections** off to reduce glare on the numbered fields. The matte setting removes the clearcoat and specular shine from the enamel and other non-metal surfaces while keeping the scene lit. The choice also applies to the inspection view and is saved on this device.
+
 ## Assemblies
 
 | Part | Construction | Movement |

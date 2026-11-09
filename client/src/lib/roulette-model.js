@@ -91,6 +91,19 @@ export function buildRouletteModel(){
     const [x,z]=radial(ballRadius,radians(angle));ball.position.set(x,ballHeight+5.4*explosion,z);
   }
   const highlightedMaterials=new Map();
+  const glossy = [wood, woodBowl, trackMaterial, ...Object.values(enamel), ball.material];
+  const clearcoats = glossy.map(material => material.clearcoat);
+  function setReflections(enabled) {
+    glossy.forEach((material, index) => {
+      material.clearcoat = enabled ? clearcoats[index] : 0;
+      material.specularIntensity = enabled ? 1 : 0;
+      const highlighted = highlightedMaterials.get(material);
+      if (highlighted) {
+        highlighted.clearcoat = material.clearcoat;
+        highlighted.specularIntensity = material.specularIntensity;
+      }
+    });
+  }
   function highlight(id){
     root.traverse(object=>{
       if(!object.isMesh)return;
@@ -105,7 +118,7 @@ export function buildRouletteModel(){
   }
   function dispose(){const geometries=new Set(),materials=new Set(Object.values(mats));root.traverse(o=>{if(o.geometry)geometries.add(o.geometry);if(o.material)materials.add(o.material);if(o.userData.baseMaterial)materials.add(o.userData.baseMaterial);});highlightedMaterials.forEach(m=>materials.add(m));geometries.forEach(g=>g.dispose());materials.forEach(m=>m.dispose());}
   update({});
-  return {root,rotor,parts,pockets,separators,ball,materials:mats,update,highlight,dispose,
+  return {root,rotor,parts,pockets,separators,ball,materials:mats,update,highlight,setReflections,dispose,
     isolate(id){for(const part of WHEEL_PARTS)parts[part.id].visible=!id||part.id===id;},
     setWoodTexture(texture){wood.map=texture;wood.color.set('#ffffff');wood.needsUpdate=true;woodBowl.map=texture;woodBowl.color.set('#d5b494');woodBowl.needsUpdate=true;highlightedMaterials.forEach((m,base)=>{m.map=base.map;m.color.copy(base.color);m.needsUpdate=true;});},
     setNumberTexture(texture){labelsMaterial.map=texture;labelsMaterial.needsUpdate=true;numberLabels.visible=true;}};

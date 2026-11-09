@@ -15,3 +15,20 @@ export function sampleRouletteMotion(from,to,progress){
   return {wheel,ball:t===1?to.ball:ball,ballRadius:3.86+(2.43-3.86)*drop,
     ballHeight:t===1?.335:1.04+(.335-1.04)*drop+bounce};
 }
+
+/** Linear contact speed along the track, before the rotor carries the ball. */
+export function sampleRouletteRoll(from, to, progress, duration) {
+  const t = clamp(progress);
+  if (t >= .8) return { gain: 0, rate: .55 };
+  const next = Math.min(.8, t + .001);
+  // Stay on the rolling side of the capture boundary when sampling velocity.
+  const end = Math.min(next, .799999);
+  if (end <= t) return { gain: 0, rate: .55 };
+  const a = sampleRouletteMotion(from, to, t);
+  const b = sampleRouletteMotion(from, to, end);
+  const distance = Math.abs(b.ball - a.ball) * Math.PI / 180 * (a.ballRadius + b.ballRadius) / 2;
+  const speed = distance / ((end - t) * duration / 1000);
+  const strength = speed / (speed + 85);
+  const release = 1 - smooth((t - .56) / .24);
+  return { gain: .46 * Math.sqrt(strength) * release, rate: .55 + 1.7 * strength };
+}

@@ -4,7 +4,8 @@ import {api} from '../lib/api.js';
 import {formatCoins} from '../data/games.js';
 import {parseWager} from '../lib/game-state.js';
 import {betLabel,numberColor,placeChip,rouletteAngles,totalStake} from '../lib/roulette.js';
-import {playTone,prepareSlotAudio} from '../lib/audio.js';
+import {playTone,prepareSlotAudio,createRouletteRoll} from '../lib/audio.js';
+import {sampleRouletteRoll} from '../lib/roulette-motion.js';
 import Icon from './Icon.jsx';
 import RouletteWheel from './RouletteWheel.jsx';
 
@@ -19,16 +20,30 @@ export default function RouletteGame({navigate}){
   const [phase,setPhase]=useState('ready'),[result,setResult]=useState(null),[pending,setPending]=useState(null);
   const [angles,setAngles]=useState({wheel:0,ball:0}),[duration,setDuration]=useState(6200);
   const [message,setMessage]=useState('The table is yours. Place your chips.');
-  const mounted=useRef(true),inFlight=useRef(false),spinRef=useRef(null),chipTouched=useRef(false);
+  const mounted=useRef(true),inFlight=useRef(false),spinRef=useRef(null),chipTouched=useRef(false),rollFrom=useRef(angles);
   const busy=phase!=='ready',locked=busy||Boolean(pending),total=totalStake(bets),amount=parseWager(chip);
   const recent=history.filter(r=>r.game==='roulette').slice(0,12);
-  useEffect(()=>{mounted.current=true;prepareSlotAudio();return()=>{mounted.current=false;setBusy(false);};},[setBusy]);
+  useEffect(()=>{mounted.current=true;prepareSlotAudio({ roulette: true });return()=>{mounted.current=false;setBusy(false);};},[setBusy]);
   useEffect(()=>{
     if(!player?.id)return;
     if(!chipTouched.current)setChip(String(player.preferences?.defaultBet||20));
     try{const saved=JSON.parse(sessionStorage.getItem(pendingKey(player.id))||'null');if(saved?.requestId&&Array.isArray(saved.bets)){setPending(saved);setBets(saved.bets);setMessage('An unfinished round was found. Resume to reveal the saved result.');}}catch{/* Storage is optional. */}
   },[player?.id,player?.preferences?.defaultBet]);
   useEffect(()=>{const key=e=>{if(e.code==='Space'&&!modal&&!document.querySelector('dialog[open]')&&!['INPUT','TEXTAREA','SELECT','BUTTON'].includes(document.activeElement?.tagName)){e.preventDefault();spinRef.current?.();}};window.addEventListener('keydown',key);return()=>window.removeEventListener('keydown',key);},[modal]);
+  useEffect(() => {
+    if (phase !== 'rolling' || duration <= 30) return;
+    const audio = createRouletteRoll();
+    const from = rollFrom.current;
+    const started = performance.now();
+    let frame;
+    function tick(now) {
+      const progress = (now - started) / duration;
+      audio.update(sampleRouletteRoll(from, angles, progress, duration));
+      if (progress < .8) frame = requestAnimationFrame(tick);
+    }
+    tick(started);
+    return () => { cancelAnimationFrame(frame); audio.stop(); };
+  }, [angles, duration, phase]);
   function remember(next){setUndo(items=>[...items.slice(-63),bets]);setBets(next);}
   function add(position){
     if(locked)return;
@@ -43,10 +58,11 @@ export default function RouletteGame({navigate}){
     setPending(request);try{sessionStorage.setItem(pendingKey(player.id),JSON.stringify(request));}catch{/* Optional storage. */}
     inFlight.current=true;setPhase('requesting');setBusy(true);setResult(null);setMessage('Bets accepted. Preparing the wheel…');
     try{
-      const data=await api('roulette/spin',request);
+      const data=await api('roulette/spin',request,player.id);
       if(!mounted.current)return;
       const ms=matchMedia('(prefers-reduced-motion: reduce)').matches?30:turbo?2800:6200;
-      setDuration(ms);setAngles(current=>rouletteAngles(current.wheel,current.ball,data.number));setPhase('rolling');setMessage('No more bets. Watch the ball.');
+      rollFrom.current = angles;
+      setDuration(ms);setAngles(rouletteAngles(angles.wheel,angles.ball,data.number));setPhase('rolling');setMessage('No more bets. Watch the ball.');
       await pause(ms+100);
       if(!mounted.current)return;
       setResult(data);setPlayer(current=>({...current,balance:data.balance}));setLastBets(data.bets);setBets([]);setUndo([]);setPending(null);
