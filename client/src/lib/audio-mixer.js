@@ -2,6 +2,7 @@ import {
   DEFAULT_AUDIO_PREFERENCES, getSoundtrack, normalizeAudioPreferences, normalizeVolume,
 } from './audio-preferences.js';
 
+const ROULETTE_ROLL = 'roulette-roll.wav';
 const effects={
   landing:['cell-landing.wav',.28],special:['cell-special.wav',.35],bonus:['cell-bonus.wav',.4],
   coins:['coin-rain.wav',.8,'winVolume'],lever:['lever-clunk.wav',.33],win:['win-chord.wav',.32,'winVolume'],
@@ -15,6 +16,11 @@ export function createAudioMixer({createMedia=src=>new Audio(src),schedule=setTi
   let mix = DEFAULT_AUDIO_PREFERENCES;
   // Раздельно храним играющие эффекты, таймеры и заранее загруженные файлы.
   const active=new Map(),pending=new Map(),prepared=new Map();
+  function stopMedia(media) {
+    active.delete(media);
+    media.pause();
+    media.currentTime = 0;
+  }
   function stopEffects(channel) {
     for (const [timer, queuedChannel] of pending) {
       if (channel && channel !== queuedChannel) continue;
@@ -23,9 +29,7 @@ export function createAudioMixer({createMedia=src=>new Audio(src),schedule=setTi
     }
     for (const [media, effect] of active) {
       if (channel && channel !== effect.channel) continue;
-      media.pause();
-      media.currentTime = 0;
-      active.delete(media);
+      stopMedia(media);
     }
   }
   function reconcileMusic(){
@@ -66,8 +70,10 @@ export function createAudioMixer({createMedia=src=>new Audio(src),schedule=setTi
     if(!media)stopEffects();
     reconcileMusic();
   }
-  function prepareEffects(){
-    for(const [file] of Object.values(effects)){
+  function prepareEffects({ roulette = false } = {}){
+    const files = Object.values(effects).map(([file]) => file);
+    if (roulette) files.push(ROULETTE_ROLL);
+    for (const file of files) {
       if(prepared.has(file))continue;
       const media=createMedia('/assets/audio/'+file);
       media.preload='auto';media.load?.();prepared.set(file,media);
@@ -93,8 +99,38 @@ export function createAudioMixer({createMedia=src=>new Audio(src),schedule=setTi
     if(delay>0){timer=schedule(start,delay);pending.set(timer,channel);}else start();
     return ()=>{
       if(timer!==null){cancel(timer);pending.delete(timer);}
-      if(media){media.pause();media.currentTime=0;active.delete(media);}
+      if (media) stopMedia(media);
     };
+  }
+  function rouletteRoll() {
+    let media, failed = false;
+    const stop = () => { if (media && active.has(media)) stopMedia(media); };
+
+    function update({ gain, rate }) {
+      if (failed || !enabled || !mix.volume || !mix.effectsVolume || !gain) {
+        stop();
+        return;
+      }
+      if (!media) {
+        media = prepared.get(ROULETTE_ROLL) ?? createMedia('/assets/audio/' + ROULETTE_ROLL);
+        media.loop = true;
+        media.preservesPitch = false;
+        media.onerror = () => { failed = true; stop(); };
+      }
+      const playing = active.get(media);
+      const effect = playing ?? { channel: 'effectsVolume' };
+      effect.gain = normalizeVolume(gain, 0);
+      media.volume = mix.volume * effect.gain * mix.effectsVolume;
+      media.playbackRate = rate;
+      if (!playing) {
+        active.set(media, effect);
+        void media.play().catch(() => {
+          if (active.get(media) === effect) { failed = true; stop(); }
+        });
+      }
+    }
+
+    return { update, stop };
   }
   function landColumn(symbols,column,{turbo=false,reduced=false}={}){
     // Обычные символы звучат выше по мере смены барабанов. У спецсимволов свой звук.
@@ -104,5 +140,5 @@ export function createAudioMixer({createMedia=src=>new Audio(src),schedule=setTi
     }));
     return ()=>stops.forEach(stop=>stop());
   }
-  return {attachMusic,configure,prepareEffects,playEffect,landColumn,stopEffects};
+  return {attachMusic,configure,prepareEffects,playEffect,landColumn,stopEffects,rouletteRoll};
 }

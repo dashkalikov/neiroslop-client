@@ -4,3 +4,140 @@
 @media(max-width:900px){.info-dialog:has(.wheel-inspector){padding:23px 20px}.wheel-inspector-layout{grid-template-columns:minmax(0,1.3fr) minmax(230px,1fr);gap:13px}.wheel-inspector-stage .roulette-model-canvas{height:420px}.wheel-part-list strong{font-size:10px}.roulette-wheel-signature{margin-top:0}}
 @media(max-width:650px){.roulette-wheel-viewbar{padding:8px 2px 0}.roulette-wheel-viewbar>span{font-size:5px;letter-spacing:1px}.roulette-wheel-viewbar button{font-size:7px;padding:5px 7px}.roulette-model-canvas{aspect-ratio:1/.93}.roulette-wheel-signature{padding:0 3px 9px;gap:7px;margin-top:0}.roulette-wheel-signature strong{font-size:10px;letter-spacing:2px}.roulette-wheel-signature>div>span{font-size:3px;letter-spacing:.4px}.roulette-wheel-signature>button{font-size:6px;max-width:145px;gap:4px}.roulette-wheel-signature svg{width:10px;height:10px}.info-dialog:has(.wheel-inspector){padding:18px 14px;max-width:calc(100vw - 18px);max-height:calc(100dvh - 18px)}.info-dialog:has(.wheel-inspector)>h2{font-size:29px}.wheel-inspector-intro{font-size:9px!important}.wheel-inspector-toolbar{gap:7px;margin:14px 0}.wheel-inspector-toolbar>div{flex-basis:100%;justify-content:center}.wheel-inspector-toolbar button{font-size:9px;padding:8px 10px}.wheel-inspector-toolbar>div>button{flex:1;justify-content:center}.wheel-inspector-layout{grid-template-columns:1fr}.wheel-inspector-stage{position:relative;top:auto}.wheel-inspector-stage .roulette-model-canvas{height:315px}.wheel-part-list{display:grid;grid-template-columns:1fr;gap:6px}.wheel-part-list>button{padding:10px;min-height:51px}.wheel-part-list strong{font-size:11px}.wheel-part-list small{font-size:8px}}
 @media(prefers-reduced-motion:reduce){.roulette-model-loading{animation:none}}
+
+.roulette-wheel-viewbar { flex-wrap:wrap; gap:6px 12px; }
+.roulette-view-actions { display:flex; flex-wrap:wrap; gap:6px; margin-left:auto; }
+.roulette-view-actions button { min-height:32px; font-size:10px; }
+.roulette-view-actions button[aria-pressed="true"] { background:#28493c; border-color:#a0bf9b75; color:#f0f5e5; }
+.roulette-view-actions button:focus-visible { outline:2px solid #d5e8bb; outline-offset:2px; }
+.roulette-physical-wheel[data-reflections="false"] .roulette-wheel-reflection { display:none; }
+
+.roulette-play-area:is(:fullscreen,.is-expanded) {
+  display:grid;
+  grid-template-areas:"bets wheel result" "footer footer footer";
+  grid-template-columns:clamp(265px,23vw,340px) minmax(0,1fr) clamp(224px,20vw,300px);
+  grid-template-rows:minmax(0,1fr) auto;
+  align-items:center;
+  gap:clamp(14px,1.5vw,24px);
+  width:100%;
+  height:100dvh;
+  padding:clamp(12px,1.4vw,22px) clamp(12px,2vw,28px);
+  overflow:auto;
+  background:radial-gradient(ellipse at center,#1e4336,#0b211a 78%);
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-upper { display:contents; }
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-wheel-column { grid-area:wheel; min-width:0; }
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-wheel-viewbar { padding:0; }
+.roulette-play-area:is(:fullscreen,.is-expanded) :is(.roulette-model-canvas,.roulette-model-fallback) {
+  width:min(100%,calc(100dvh - 220px));
+  min-height:0;
+  margin-inline:auto;
+  aspect-ratio:1;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-wheel-scene { max-width:none; }
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-round-panel {
+  grid-area:result;
+  min-width:0;
+  max-height:100%;
+  margin:0;
+  padding:clamp(14px,1.5vw,23px);
+  overflow:auto;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-table {
+  grid-area:bets;
+  display:flex;
+  flex-direction:column;
+  width:100%;
+  min-width:0;
+  max-height:100%;
+  margin:0;
+  padding:clamp(12px,1.4vw,20px);
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) :is(.roulette-table-heading,.roulette-chip-tray,.roulette-table-footer) {
+  flex-shrink:0;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-chip-tray {
+  gap:9px;
+  padding:12px 0;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-chip {
+  width:32px;
+  height:32px;
+  border-width:4px;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-custom-chip { margin-left:0; }
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-betting-scroll {
+  min-height:0;
+  overflow:auto;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) :is(.roulette-betting-layout,.roulette-number-grid) { min-width:0; }
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-number-grid {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  grid-template-rows:none;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-spot.zero {
+  grid-column:1/-1;
+  grid-row:1;
+  border-radius:6px 6px 0 0;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) :is(.roulette-dozens,.roulette-outside) {
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  min-width:0;
+  margin:0;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-spot {
+  min-height:clamp(25px,calc((100dvh - 470px) / 17),32px);
+  padding:3px 2px;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-number-grid .roulette-spot { font-size:15px; }
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-table-footer {
+  align-items:stretch;
+  flex-direction:column;
+  gap:10px;
+  padding-top:10px;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-spin {
+  min-width:0;
+  padding:10px 14px;
+  font-size:19px;
+}
+.roulette-play-area:is(:fullscreen,.is-expanded) .roulette-footline {
+  grid-area:footer;
+  margin:0;
+}
+.roulette-play-area.is-expanded { position:fixed; inset:0; z-index:40; }
+html:has(.roulette-play-area.is-expanded) { overflow:hidden; }
+.roulette-page:has(.roulette-play-area.is-expanded) { position:relative; z-index:30; }
+.roulette-room:has(.roulette-play-area.is-expanded) { isolation:auto; overflow:visible; }
+
+@media(max-width:1000px) {
+  .roulette-play-area:is(:fullscreen,.is-expanded) {
+    grid-template-areas:"bets wheel" "bets result" "footer footer";
+    grid-template-columns:minmax(250px,.8fr) minmax(0,1fr);
+    grid-template-rows:auto;
+    align-content:start;
+    align-items:start;
+  }
+  .roulette-play-area:is(:fullscreen,.is-expanded) :is(.roulette-model-canvas,.roulette-model-fallback) {
+    width:min(100%,52dvh);
+  }
+  .roulette-play-area:is(:fullscreen,.is-expanded) .roulette-table { max-height:calc(100dvh - 32px); }
+}
+@media(max-width:680px), (max-height:470px) {
+  .roulette-play-area:is(:fullscreen,.is-expanded) {
+    grid-template-areas:"wheel" "bets" "result" "footer";
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:auto;
+    justify-items:center;
+  }
+  .roulette-play-area:is(:fullscreen,.is-expanded) :is(.roulette-wheel-column,.roulette-table,.roulette-round-panel) {
+    width:min(100%,560px);
+    max-height:none;
+  }
+  .roulette-play-area:is(:fullscreen,.is-expanded) .roulette-betting-scroll { overflow:visible; }
+  .roulette-play-area:is(:fullscreen,.is-expanded) .roulette-spot { min-height:36px; }
+}
+@media(max-width:650px) {
+  .roulette-view-actions button { min-height:34px; }
+  .roulette-play-area:is(:fullscreen,.is-expanded) .roulette-wheel-viewbar>span { font-size:8px; }
+}

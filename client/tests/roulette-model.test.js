@@ -65,3 +65,37 @@ test('enamel pocket floors face upward and remain visible from the playing camer
   }
   model.dispose();
 });
+
+test('roulette rolling audio is faster at launch and quiet once the ball is caught', async () => {
+  const motion = await import('../src/lib/roulette-motion.js');
+  const from = { wheel: 0, ball: 0 };
+  const to = { wheel: 1853, ball: -3585.918918918919 };
+  const launch = motion.sampleRouletteRoll(from, to, 0, 6200);
+  const slowing = motion.sampleRouletteRoll(from, to, .45, 6200);
+  const turbo = motion.sampleRouletteRoll(from, to, 0, 2800);
+  assert.ok(launch.rate > slowing.rate && launch.gain > slowing.gain);
+  assert.ok(turbo.rate > launch.rate);
+  assert.equal(motion.sampleRouletteRoll(from, to, .8, 6200).gain, 0);
+  assert.equal(motion.sampleRouletteRoll(from, to, 1, 6200).gain, 0);
+});
+
+test('the reflection switch removes enamel glare and restores the original finish', async () => {
+  const {buildRouletteModel}=await import('../src/lib/roulette-model.js');
+  const model=buildRouletteModel();
+  const red=model.materials.red;
+  const original={color:red.color.getHex(),clearcoat:red.clearcoat,roughness:red.roughness};
+  model.highlight('numbers');
+  const number=model.parts.numbers.children.find(mesh=>mesh.userData.baseMaterial===red);
+  model.setReflections(false);
+  for (const material of [red,number.material,model.materials.trackMaterial]) {
+    assert.equal(material.clearcoat,0);
+    assert.equal(material.specularIntensity,0);
+  }
+  assert.equal(red.color.getHex(),original.color);
+  assert.equal(red.roughness,original.roughness);
+  model.setReflections(true);
+  assert.equal(red.clearcoat,original.clearcoat);
+  assert.equal(number.material.clearcoat,original.clearcoat);
+  assert.equal(red.specularIntensity,1);
+  model.dispose();
+});

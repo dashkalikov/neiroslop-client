@@ -1,4 +1,6 @@
 const paths = {
+  expand:'<path d="M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5"/>',
+  minimize:'<path d="M9 4v5H4m16 0h-5V4m0 16v-5h5M4 15h5v5"/>',
   roulette:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/><circle cx="12" cy="12" r="1"/>',
   profile:'<circle cx="12" cy="8" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/>',
   undo:'<path d="M3 10h11a7 7 0 0 1 0 14M3 10l6-6M3 10l6 6"/>',
