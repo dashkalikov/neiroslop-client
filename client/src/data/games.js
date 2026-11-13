@@ -1,4 +1,6 @@
-import {BASS_PAYLINES} from '../lib/game-state.js';
+import { BASS_PAYLINES, SIX_ROW_PAYLINES } from '../lib/game-state.js';
+
+const tallReels = { reels: 5, rows: 6, paylines: SIX_ROW_PAYLINES };
 
 export const games = [
   {id:'roulette',name:'Riviera Roulette',title:['Riviera','Roulette'],subtitle:'THE TABLE COLLECTION',type:'table',
@@ -57,7 +59,34 @@ export const games = [
     description: 'Descend into a forgotten underwater kingdom of iridescent pearls, golden tridents, and ancient treasures. Three BONUS medallions award 7 free spins with triple line wins.',
     headline: ['Go a little deeper.', 'Find the extraordinary.'], feature: 'A lost kingdom. A shimmering new adventure.\nDiscover triple-win free spins beneath the waves.',
     accent: '#9cdecf', label: 'TIDAL TREASURES · 3× WINS', symbolNames: ['Aquamarine', 'Coral star', 'Pearl shell', 'Sea crown', 'Sea turtle', 'Trident wild', 'Pearl bonus'] },
+  {
+    ...tallReels, stageAsset: '/assets/cosmic-stage-tall.png',
+    id: 'cosmic', name: 'Cosmic Rush', title: ['Cosmic', 'Rush'], subtitle: 'SPACE', category: 'Space',
+    tag: '8 FREE SPINS', meta: '8 free spins · 2× wins', bonus: 8, multiplier: 2,
+    headline: ['Cosmic', 'Rush'], feature: 'Land three rockets for 8 free spins with double wins.',
+    description: 'Match space symbols across ten paylines. Black holes are wild. Three rockets anywhere award 8 free spins with double line wins.',
+    accent: '#b1bdff', label: 'ORBITAL FREE SPINS',
+    symbolNames: ['Energy crystal', 'Golden sun', 'Ringed planet', 'Satellite', 'Comet', 'Black hole wild', 'Rocket bonus'],
+  },
+  {
+    ...tallReels, stageAsset: '/assets/candy-stage-tall.png',
+    id: 'candy', name: 'Candy Riot', title: ['Candy', 'Riot'], subtitle: 'CANDY', category: 'Candy',
+    tag: '12 FREE SPINS', meta: '12 free spins', bonus: 12, multiplier: 1,
+    headline: ['Candy', 'Riot'], feature: 'Land three candy jars for 12 free spins.',
+    description: 'Match sweets across ten paylines. Wrapped gold candy is wild. Three candy jars anywhere award 12 free spins.',
+    accent: '#ffacd8', label: 'CANDY JAR FREE SPINS',
+    symbolNames: ['Raspberry candy', 'Lollipop', 'Gumdrop', 'Chocolate', 'Peppermint', 'Gold candy wild', 'Candy jar bonus'],
+  },
+  {
+    ...tallReels, stageAsset: '/assets/dragon-stage-tall.png',
+    id: 'dragon', name: 'Dragon Grove', title: ['Dragon', 'Grove'], subtitle: 'FANTASY', category: 'Fantasy',
+    tag: '6 FREE SPINS', meta: '6 free spins · 3× wins', bonus: 6, multiplier: 3,
+    headline: ['Dragon', 'Grove'], feature: 'Land three rune stones for 6 free spins with triple wins.',
+    description: 'Match grove symbols across ten paylines. Golden dragons are wild. Three rune stones anywhere award 6 free spins with triple line wins.',
+    accent: '#b6e5a0', label: 'RUNE STONE FREE SPINS',
+    symbolNames: ['Dragon egg', 'Dragon claw', 'Green flame', 'Grove crown', 'Oak leaf', 'Golden dragon wild', 'Rune stone bonus'],
+  },
 ];
 export const gameById = Object.fromEntries(games.map(game => [game.id, game]));
-export const formatCoins = n => Number(n).toLocaleString('en-US');
+export const formatCoins = (n, language = 'en') => Number(n).toLocaleString(language);
 export const asset = (id, kind = 'scene') => `/assets/${id}-${kind}.png`;

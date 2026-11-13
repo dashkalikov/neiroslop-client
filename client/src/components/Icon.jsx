@@ -1,4 +1,6 @@
 const paths = {
+  eye: '<path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="2.5"/>',
+  'eye-off': '<path d="M3 3l18 18M10.6 6.1C17.6 5.3 22 12 22 12a15 15 0 0 1-3 3.3M6.2 7.5A15 15 0 0 0 2 12s3.6 6 10 6c1.5 0 2.9-.3 4.1-.9"/><path d="M10.2 10.2a2.5 2.5 0 0 0 3.6 3.6"/>',
   expand:'<path d="M4 9V4h5m6 0h5v5m0 6v5h-5m-6 0H4v-5"/>',
   minimize:'<path d="M9 4v5H4m16 0h-5V4m0 16v-5h5M4 15h5v5"/>',
   roulette:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l3 3M15 15l3 3M6 18l3-3M15 9l3-3"/><circle cx="12" cy="12" r="1"/>',

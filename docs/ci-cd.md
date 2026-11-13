@@ -73,7 +73,7 @@ COOKIE_SECURE=false
 
 ## Enable GitHub Actions and delivery
 
-The existing client, server and database repositories are component repositories. Put this workflow at the root of the [full-stack integration repository](https://github.com/dashkalikov/neiroslop-integration), which has `client/`, `backend/`, the root npm and Vite files, the two Dockerfiles, `compose.yaml`, `deploy/`, `scripts/ci/` and `.github/workflows/`. Use the same integration commit to capture the selected versions of the client and server. Review the staged files before the initial commit so credentials, local database data, dependency caches and repository exports stay out of Git.
+The existing client, server and database repositories are component repositories. Put this workflow at the root of a full-stack integration repository that has `client/`, `backend/`, the root npm and Vite files, the two Dockerfiles, `compose.yaml`, `deploy/`, `scripts/ci/` and `.github/workflows/`. Use the same integration commit to capture the selected versions of the client and server. Review the staged files before the initial commit so credentials, local database data, dependency caches and repository exports stay out of Git.
 
 1. Push the reviewed integration changes to `main`. Run **Container CI/CD** from the Actions tab or open a pull request and watch the Linux and Windows jobs. Require the container checks in the integration repository's branch protection if they should gate merges.
 2. After the checks pass, create a release tag on the reviewed commit. Restrict who can create or update `v*` tags in the repository's ruleset.
@@ -89,7 +89,7 @@ Use the recorded digest with `docker pull` for repeatable delivery. On Windows, 
 
 ## Enable the optional Linux deployment
 
-1. On a Linux amd64 deployment host with Docker Compose, install [deploy/compose.yaml](https://github.com/dashkalikov/neiroslop-integration/blob/main/deploy/compose.yaml) as `/srv/neiroslop/compose.yaml`. Set up a restricted SSH deploy account with Docker access and access to the private GHCR package if needed.
+1. On a Linux amd64 deployment host with Docker Compose, install [deploy/compose.yaml](../deploy/compose.yaml) as `/srv/neiroslop/compose.yaml`. Set up a restricted SSH deploy account with Docker access and access to the private GHCR package if needed.
 2. Create `/etc/neiroslop/app.env` on that host and allow the deploy account to read it. Set `DATABASE_URL` for the persistent PostgreSQL service, `ALLOWED_ORIGINS` to the HTTPS site origin, and `COOKIE_SECURE=true`. Configure your TLS reverse proxy to send traffic to `127.0.0.1:8000`. PostgreSQL must allow the app user to create the initial tables and update the catalog.
 3. In the integration repository, create the `production` GitHub environment, restrict it to release tags, and configure required reviewers where available. Add environment secrets `DEPLOY_HOST`, `DEPLOY_USER`, `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS`. Use the server's independently verified SSH host key for the last value. Set the repository variable `DEPLOY_LINUX=true` when the target is ready. [GitHub deployment environments](https://docs.github.com/en/actions/concepts/workflows-and-actions/deployment-environments)
 4. Push a release tag and approve its production job if configured. Verify the public site and its `/api/health` endpoint. The app's health check includes a live database query.
@@ -101,3 +101,13 @@ bash deploy-linux.sh "$PREVIOUS_LINUX_IMAGE"
 ```
 
 Use the checked-in deployment script for that command and set `PREVIOUS_LINUX_IMAGE` to the full digest reference from a successful release. Image rollback restores application code. Database schema changes need their own migration and rollback procedure. This prototype currently creates tables on startup and has no versioned migration runner.
+
+## Authenticator encryption key
+
+For local Linux Compose, the app generates the authenticator key on the first enrollment and keeps it in the `auth_data` volume. For a standalone Windows or Linux image, or an HTTPS deployment, generate a Fernet key once in an environment with the backend requirements installed.
+
+```sh
+python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
+```
+
+Set the output as `AUTH_SECRET_KEY` in the runtime environment file. Use the same key across replicas and deployments and store it outside Git. Keep a secure backup of the key and the PostgreSQL database. HTTPS deployments should also set `COOKIE_SECURE=true` and include the public site origin in `ALLOWED_ORIGINS`.

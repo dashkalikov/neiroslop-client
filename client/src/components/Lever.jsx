@@ -1,8 +1,10 @@
+import { useLanguage } from '../LanguageContext.jsx';
 import {useEffect,useRef,useState,useId} from 'react';
 import {leverPose,leverProgress} from '../lib/game-state.js';
 
 /** Rigid shaft pivots from upright to downward, preserving both end positions. */
 export default function Lever({disabled,onPull,spinning,crystal=false}) {
+  const { t } = useLanguage();
   const [progress,setProgress]=useState(0);
   const current=useRef(0), origin=useRef(null), dragged=useRef(false), frame=useRef(null);
   const id=useId().replaceAll(':','');
@@ -32,8 +34,8 @@ export default function Lever({disabled,onPull,spinning,crystal=false}) {
     else cycle(current.current,true);
   }
   return <div className="mechanical-lever pivot-lever">
-    <span className="lever-upper-label" aria-hidden="true">PULL<br/><b>↓</b></span>
-    <button className="lever-handle pivot-handle" aria-label="Pull lever to spin" disabled={disabled}
+    <span className="lever-upper-label" aria-hidden="true">{t("PULL")}<br/><b>↓</b></span>
+    <button className="lever-handle pivot-handle" aria-label={t("Pull lever to spin")} disabled={disabled}
       onPointerDown={event=>{if(disabled)return;cancelAnimationFrame(frame.current);dragged.current=false;origin.current={y:event.clientY,scale:event.currentTarget.getBoundingClientRect().height/390};event.currentTarget.setPointerCapture(event.pointerId);}}
       onPointerMove={event=>{if(!origin.current)return;const p=leverProgress(origin.current.y,event.clientY,origin.current.scale);dragged.current ||= p>.025;move(p);}}
       onPointerUp={event=>release(event)} onPointerCancel={event=>release(event,true)} onLostPointerCapture={event=>release(event,true)}
@@ -56,7 +58,7 @@ export default function Lever({disabled,onPull,spinning,crystal=false}) {
         {crystal?<g className="crystal-grip" transform={`translate(${pose.x} ${pose.y})`}><path d="M0-37 25-18 17 24 0 32-17 24-25-18Z" fill={'url(#'+id+'-crystal)'} stroke="#ddffed" strokeWidth="1.5"/><path d="M0-37-10-12 0 32 10-12ZM-25-18-10-12 25-18M-17 24 0 32 17 24" fill="#fff3" stroke="#f4fff7" strokeWidth="1"/><path d="M-17 25H17V36H-17Z" fill={'url(#'+id+'-brass)'} stroke="#f7dc9f"/><path d="M-8-18 0-29 5-20" fill="none" stroke="#fff" strokeWidth="2"/></g>:<><circle className="ruby-grip" cx={pose.x} cy={pose.y} r="33" fill={'url(#'+id+'-ruby)'} stroke="#f4828a" strokeWidth="1"/><ellipse cx={pose.x-8} cy={pose.y-12} rx="11" ry="5" fill="#fff6" transform={'rotate(-25 '+(pose.x-8)+' '+(pose.y-12)+')'}/></>}
       </svg>
     </button>
-    <span className="lever-instruction">ONE PULL<br/>ONE SPIN</span>
+    <span className="lever-instruction">{t("ONE PULL")}<br/>{t("ONE SPIN")}</span>
   </div>;
 }
 

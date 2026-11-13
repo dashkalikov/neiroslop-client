@@ -1,3 +1,4 @@
+import { useLanguage } from '../LanguageContext.jsx';
 import {useEffect,useRef,useState} from 'react';
 import {useLounge} from '../LoungeContext.jsx';
 import {api} from '../lib/api.js';
@@ -16,6 +17,8 @@ const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const pendingKey=id=>'lounge-roulette-pending-'+id;
 
 export default function RouletteGame({navigate}){
+  const { t, language } = useLanguage();
+  const coins = value => formatCoins(value, language);
   const {player,setPlayer,history,loadHistory,setBusy,notify,setModal,modal,sound,turbo,setTurbo}=useLounge();
   const [bets,setBets]=useState([]),[undo,setUndo]=useState([]),[lastBets,setLastBets]=useState([]);
   const [chip,setChip]=useState(String(player?.preferences?.defaultBet||20));
@@ -126,7 +129,7 @@ export default function RouletteGame({navigate}){
       if(!mounted.current)return;
       setResult(data);setPlayer(current=>({...current,balance:data.balance}));setLastBets(data.bets);setBets([]);setUndo([]);setPending(null);
       try{sessionStorage.removeItem(pendingKey(player.id));}catch{/* Optional storage. */}
-      setMessage(`${data.number} · ${data.color.toUpperCase()}${data.payout?` · ${formatCoins(data.payout)} coins returned`:' · A new round awaits'}`);
+      setMessage(null);
       if(sound)playTone(data.payout?'coins':'landing');
       void loadHistory().catch(()=>notify('The round is saved. History will refresh when reconnected.'));
     }catch(error){
@@ -139,7 +142,7 @@ export default function RouletteGame({navigate}){
   function spot(kind,value,label,className=''){
     const position={kind,...(value===undefined?{}:{value})},placed=bets.find(b=>b.kind===kind&&b.value===value);
     const won=result?.wins.some(b=>b.kind===kind&&b.value===value);
-    return <button key={kind+String(value)} className={`roulette-spot ${className} ${placed?'has-chip':''} ${won?'winning':''}`} disabled={locked} onClick={()=>add(position)} aria-label={`Bet on ${betLabel(position).toLowerCase()}`}><span>{label}</span>{placed?<i className="table-chip">{formatCoins(placed.amount)}</i>:null}{won?<b className="roulette-win-dot"/>:null}</button>;
+    return <button key={kind+String(value)} className={`roulette-spot ${className} ${placed?'has-chip':''} ${won?'winning':''}`} disabled={locked} onClick={()=>add(position)} aria-label={t('Bet on {0}', (kind === 'straight' ? t('Number {0}', value) : kind === 'column' ? t('Column {0}', value) : t(betLabel(position))).toLowerCase())}><span>{t(label)}</span>{placed?<i className="table-chip">{coins(placed.amount)}</i>:null}{won?<b className="roulette-win-dot"/>:null}</button>;
   }
   const numberSpot = n => spot('straight', n, n, numberColor(n));
   const columnSpot = column => spot('column', column, '2:1', 'column');
@@ -150,26 +153,26 @@ export default function RouletteGame({navigate}){
   return <main className="roulette-page">
     <section className="roulette-room" aria-label="Riviera Roulette">
       <div className="roulette-room-art" aria-hidden="true"/>
-      <div className="roulette-topline"><button onClick={()=>navigate('all')} disabled={busy}><Icon name="arrow"/> Back to lobby</button><span><i/> EUROPEAN · SINGLE ZERO</span><button onClick={()=>setModal({kind:'rouletteRules'})}><Icon name="book"/> How to play</button></div>
-      <header className="roulette-title"><p>THE TABLE COLLECTION</p><h1>Riviera <em>Roulette</em></h1><span>A timeless game. A seat just for you.</span></header>
+      <div className="roulette-topline"><button onClick={()=>navigate('all')} disabled={busy}><Icon name="arrow"/>{" " + t("Back to lobby")}</button><span><i/>{" " + t("EUROPEAN · SINGLE ZERO")}</span><button onClick={()=>setModal({kind:'rouletteRules'})}><Icon name="book"/>{" " + t("How to play")}</button></div>
+      <header className="roulette-title"><p>{t("THE TABLE COLLECTION")}</p><h1>Riviera <em>Roulette</em></h1><span>{t("A timeless game. A seat just for you.")}</span></header>
       <div ref={playArea} className={`roulette-play-area${expanded ? ' is-expanded' : ''}`}
         role={expanded ? 'dialog' : undefined} aria-modal={expanded || undefined}
-        aria-label={expanded ? 'Full-screen Riviera Roulette' : undefined}>
+        aria-label={expanded ? t("Full-screen Riviera Roulette") : undefined}>
         <div className="roulette-upper">
-          <div className="roulette-wheel-column"><RouletteWheel locked={busy} angles={angles} spinning={phase==='rolling'} duration={duration} number={result?.number??null} fullScreen={fullScreen} fullscreenButton={fullscreenButton} onToggleFullscreen={toggleFullscreen}/><div className="roulette-status" role="status" aria-live="polite"><i className={busy?'rolling':''}/>{message}</div></div>
-          <aside className="roulette-round-panel"><div className="roulette-panel-heading"><span>YOUR SEAT AT THE RIVIERA</span><Icon name="sparkles"/></div>
-            <div className="roulette-result-display"><span className={`roulette-result-number ${result?.color||'waiting'}`}>{result?.number??'✧'}</span><div><small>{result?'THE WINNING NUMBER':'EVERY SPIN, A NEW STORY'}</small><h2>{result?result.color==='green'?'Le zéro.':`${result.color[0].toUpperCase()+result.color.slice(1)} ${result.number%2?'odd':'even'}.`:'Make your moment.'}</h2><p>{result?result.payout?`+${formatCoins(result.payout)} coins returned, including winning stakes.`:'The wheel has settled. Your next round is ready.':'Place chips on a number, a color, or your favorite corner of the table.'}</p></div></div>
-            <div className="roulette-round-stats"><div><span>YOUR BALANCE</span><strong>✦ {player?formatCoins(player.balance):'—'}</strong></div><div><span>ON THE TABLE</span><strong>{formatCoins(total)} <small>coins</small></strong></div></div>
-            <div className="roulette-recent-heading"><span>YOUR RECENT NUMBERS</span><button onClick={()=>setModal({kind:'history'})}>History <Icon name="arrow"/></button></div><div className="roulette-recent">{recent.length?recent.map(r=><span key={r.id} className={r.color}>{r.number}</span>):<p>Your first number is waiting to be written.</p>}</div>
-            <div className="roulette-payout-note"><Icon name="shield"/><p>37 pockets. One green zero.<br/><span>Straight-up pays 35:1 · Outside bets 1:1</span></p></div>
+          <div className="roulette-wheel-column"><RouletteWheel locked={busy} angles={angles} spinning={phase==='rolling'} duration={duration} number={result?.number??null} fullScreen={fullScreen} fullscreenButton={fullscreenButton} onToggleFullscreen={toggleFullscreen}/><div className="roulette-status" role="status" aria-live="polite"><i className={busy?'rolling':''}/>{message ? t(message) : result && t('{0} · {1} {2}', result.number, t(result.color).toUpperCase(), result.payout ? t('· {0} coins returned', coins(result.payout)) : t('· A new round awaits'))}</div></div>
+          <aside className="roulette-round-panel"><div className="roulette-panel-heading"><span>{t("YOUR SEAT AT THE RIVIERA")}</span><Icon name="sparkles"/></div>
+            <div className="roulette-result-display"><span className={`roulette-result-number ${result?.color||'waiting'}`}>{result?.number??'✧'}</span><div><small>{result?t("THE WINNING NUMBER"):t("EVERY SPIN, A NEW STORY")}</small><h2>{result?result.color==='green'?t("Le zéro."):t(result.color === 'red' ? 'Red' : 'Black') + ' ' + t(result.number % 2 ? 'odd' : 'even') + '.':t("Make your moment.")}</h2><p>{result?result.payout?t('+{0} coins returned, including winning stakes.', coins(result.payout)):t("The wheel has settled. Your next round is ready."):t("Place chips on a number, a color, or your favorite corner of the table.")}</p></div></div>
+            <div className="roulette-round-stats"><div><span>{t("YOUR BALANCE")}</span><strong>✦ {player?coins(player.balance):'—'}</strong></div><div><span>{t("ON THE TABLE")}</span><strong>{coins(total)} <small>{t("coins")}</small></strong></div></div>
+            <div className="roulette-recent-heading"><span>{t("YOUR RECENT NUMBERS")}</span><button onClick={()=>setModal({kind:'history'})}>{t("History") + " "}<Icon name="arrow"/></button></div><div className="roulette-recent">{recent.length?recent.map(r=><span key={r.id} className={r.color}>{r.number}</span>):<p>{t("Your first number is waiting to be written.")}</p>}</div>
+            <div className="roulette-payout-note"><Icon name="shield"/><p>{t("37 pockets. One green zero.")}<br/><span>{t("Straight-up pays 35:1 · Outside bets 1:1")}</span></p></div>
           </aside>
         </div>
-        <section className="roulette-table" aria-label="Roulette betting table"><div className="roulette-table-heading"><div><span>PLACE YOUR CHIPS</span><p>Choose a chip value, then tap any betting area.</p></div><span>TABLE LIMIT · 10,000 COINS</span></div>
-          <div className="roulette-chip-tray" role="group" aria-label="Chip value">{[1,5,10,25,100,500].map((n,i)=><button key={n} className={`roulette-chip chip-${i} ${Number(chip)===n?'selected':''}`} aria-pressed={Number(chip)===n} onClick={()=>{chipTouched.current=true;setChip(String(n));}} disabled={locked} aria-label={`${n} coin chip`}>{n}</button>)}<label className="roulette-custom-chip">CUSTOM CHIP<input aria-label="Custom chip value" type="text" inputMode="numeric" pattern="[0-9]*" maxLength={5} value={chip} disabled={locked} onChange={e=>{chipTouched.current=true;setChip(e.target.value);}} aria-invalid={amount===null}/><span>coins per click</span></label><div className="roulette-bet-tools"><button disabled={locked||!undo.length} onClick={()=>{setBets(undo.at(-1));setUndo(items=>items.slice(0,-1));}}><Icon name="undo"/>Undo</button><button disabled={locked||!bets.length} onClick={()=>remember([])}>Clear</button><button disabled={locked||!lastBets.length} onClick={()=>{if(totalStake(lastBets)>(player?.balance||0))return notify('Not enough coins to repeat those bets.',true);remember(lastBets);}}>Rebet</button></div></div>
-          <div className="roulette-betting-scroll"><div className="roulette-betting-layout"><div className="roulette-number-grid">{spot('straight',0,'0','zero green')}{numberBoard}</div><div className="roulette-dozens">{[1,2,3].map(n=>spot('dozen',n,`${['1st','2nd','3rd'][n-1]} 12`))}</div><div className="roulette-outside">{OUTSIDE.map(([kind,label])=>spot(kind,undefined,label,kind==='red'||kind==='black'?kind:''))}</div></div></div>
-          <div className="roulette-table-footer"><div><span>TOTAL WAGER</span><strong>{formatCoins(total)} <small>virtual coins</small></strong><p>{bets.length?`${bets.length} betting ${bets.length===1?'position':'positions'}`:'Your chips stay in your wallet until you spin.'}</p></div><button className="roulette-spin" disabled={busy||!player||(!pending&&!total)||(!pending&&total>player.balance)} onClick={spin}><Icon name={busy?'auto':'spin'}/><span>{phase==='requesting'?'Preparing…':phase==='rolling'?'Ball in motion':pending?'Resume round':'Spin the wheel'}<small>{pending&&!busy?'REVEAL YOUR SAVED ROUND':'LET THE MOMENT UNFOLD'}</small></span><Icon name="arrow"/></button></div>
+        <section className="roulette-table" aria-label={t("Roulette betting table")}><div className="roulette-table-heading"><div><span>{t("PLACE YOUR CHIPS")}</span><p>{t("Choose a chip value, then tap any betting area.")}</p></div><span>{t("TABLE LIMIT · 10,000 COINS")}</span></div>
+          <div className="roulette-chip-tray" role="group" aria-label={t("Chip value")}>{[1,5,10,25,100,500].map((n,i)=><button key={n} className={`roulette-chip chip-${i} ${Number(chip)===n?'selected':''}`} aria-pressed={Number(chip)===n} onClick={()=>{chipTouched.current=true;setChip(String(n));}} disabled={locked} aria-label={t('{0} coin chip', n)}>{n}</button>)}<label className="roulette-custom-chip">{t("CUSTOM CHIP")}<input aria-label={t("Custom chip value")} type="text" inputMode="numeric" pattern="[0-9]*" maxLength={5} value={chip} disabled={locked} onChange={e=>{chipTouched.current=true;setChip(e.target.value);}} aria-invalid={amount===null}/><span>{t("coins per click")}</span></label><div className="roulette-bet-tools"><button disabled={locked||!undo.length} onClick={()=>{setBets(undo.at(-1));setUndo(items=>items.slice(0,-1));}}><Icon name="undo"/>{t("Undo")}</button><button disabled={locked||!bets.length} onClick={()=>remember([])}>{t("Clear")}</button><button disabled={locked||!lastBets.length} onClick={()=>{if(totalStake(lastBets)>(player?.balance||0))return notify('Not enough coins to repeat those bets.',true);remember(lastBets);}}>{t("Rebet")}</button></div></div>
+          <div className="roulette-betting-scroll"><div className="roulette-betting-layout"><div className="roulette-number-grid">{spot('straight',0,'0','zero green')}{numberBoard}</div><div className="roulette-dozens">{[1,2,3].map(n=>spot('dozen',n,t(['1st 12', '2nd 12', '3rd 12'][n - 1])))}</div><div className="roulette-outside">{OUTSIDE.map(([kind,label])=>spot(kind,undefined,label,kind==='red'||kind==='black'?kind:''))}</div></div></div>
+          <div className="roulette-table-footer"><div><span>{t("TOTAL WAGER")}</span><strong>{coins(total)} <small>{t("virtual coins")}</small></strong><p>{bets.length?t(bets.length === 1 ? '{0} betting position' : '{0} betting positions', bets.length):t("Your chips stay in your wallet until you spin.")}</p></div><button className="roulette-spin" disabled={busy||!player||(!pending&&!total)||(!pending&&total>player.balance)} onClick={spin}><Icon name={busy?'auto':'spin'}/><span>{phase==='requesting'?t("Preparing…"):phase==='rolling'?t("Ball in motion"):pending?t("Resume round"):t("Spin the wheel")}<small>{pending&&!busy?t("REVEAL YOUR SAVED ROUND"):t("LET THE MOMENT UNFOLD")}</small></span><Icon name="arrow"/></button></div>
         </section>
-        <div className="roulette-footline"><span>VIRTUAL COINS · NO CASH VALUE</span><button onClick={()=>setTurbo(!turbo)} aria-pressed={turbo} disabled={busy}><Icon name="bolt"/>Quick spin {turbo?'on':'off'}</button><button onClick={()=>setModal({kind:'rouletteRules'})}>Rules & payouts</button></div>
+        <div className="roulette-footline"><span>{t("VIRTUAL COINS · NO CASH VALUE")}</span><button onClick={()=>setTurbo(!turbo)} aria-pressed={turbo} disabled={busy}><Icon name="bolt"/>{t("Quick spin") + " "}{turbo?t("on"):t("off")}</button><button onClick={()=>setModal({kind:'rouletteRules'})}>{t("Rules & payouts")}</button></div>
       </div>
     </section>
   </main>;

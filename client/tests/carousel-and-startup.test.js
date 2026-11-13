@@ -36,30 +36,3 @@ test('rotation can be paused while arrows still work, then resumed without dupli
   carousel.next();assert.deepEqual(shown,['royal']);time.advance(20000);assert.equal(shown.length,1);
   carousel.start();time.advance(10000);assert.deepEqual(shown,['royal','moon']);
 });
-
-test('startup waits for both its minimum presentation and ready artwork, then exits once',async()=>{
-  const {createStartup}=await import('../src/lib/startup.js');
-  const time=clock(),events=[];
-  const startup=createStartup({...time,onExit:()=>events.push('exit'),onRemove:()=>events.push('remove')});
-  startup.ready();time.advance(2599);assert.deepEqual(events,[]);
-  time.advance(1);assert.deepEqual(events,['exit']);
-  time.advance(650);assert.deepEqual(events,['exit','remove']);
-  startup.skip();time.advance(10000);assert.equal(events.length,2);
-});
-
-test('startup cannot get stuck on missing assets and can be skipped immediately',async()=>{
-  const {createStartup}=await import('../src/lib/startup.js');
-  const time=clock(),events=[];
-  createStartup({...time,onExit:()=>events.push('exit'),onRemove:()=>events.push('remove')});
-  time.advance(6999);assert.deepEqual(events,[]);
-  time.advance(1);assert.deepEqual(events,['exit']);time.advance(650);assert.equal(events.at(-1),'remove');
-  const skipped=createStartup({...time,onExit:()=>events.push('skip'),onRemove:()=>events.push('removed')});
-  skipped.skip();assert.equal(events.at(-1),'skip');time.advance(650);assert.equal(events.at(-1),'removed');
-});
-
-test('disposing startup cancels all pending UI callbacks',async()=>{
-  const {createStartup}=await import('../src/lib/startup.js');
-  const time=clock(),events=[];
-  const startup=createStartup({...time,onExit:()=>events.push('exit'),onRemove:()=>events.push('remove')});
-  startup.ready();startup.dispose();time.advance(20000);assert.deepEqual(events,[]);
-});

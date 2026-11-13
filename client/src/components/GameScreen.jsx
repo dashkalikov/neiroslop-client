@@ -1,3 +1,4 @@
+import { useLanguage } from '../LanguageContext.jsx';
 import { useEffect, useRef, useState } from 'react';
 import { asset, formatCoins } from '../data/games.js';
 import { useLounge } from '../LoungeContext.jsx';
@@ -13,28 +14,36 @@ import CoinRain from './CoinRain.jsx';
 import { MineDetails } from './CabinetDetails.jsx';
 import BassDetails from './BassDetails.jsx';
 import MechanicalCabinet from './SaloonMachine.jsx';
+import PaylinePicker from './PaylinePicker.jsx';
 
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const symbols = ['gem','star','orb','crown','leaf','wild','scatter'];
 const spinningGrid = Array.from({length:5}, (_,c) => Array.from({length:9}, (_,r) => symbols[(r%3+c*2)%symbols.length]));
+const tallSpinningGrid = Array.from({ length: 5 }, (_, column) =>
+  Array.from({ length: 18 }, (_, row) => symbols[(row % 6 + column * 2) % symbols.length]));
 const lineColors = ['#eaca87','#b3a1ff','#86decc','#f4a5d7','#a5d5ff'];
 
 export default function GameScreen({ game, navigate }) {
+  const { t, language } = useLanguage();
+  const coins = value => formatCoins(value, language);
   const lounge = useLounge();
   const { player, setPlayer, catalog, setHistory, notify, reload, setBusy, setModal, modal, sound, setSound, turbo, setTurbo } = lounge;
   const rules = catalog.find(g => g.id === game.id);
   const reelCount = rules?.reels || game.reels || 5;
+  const rowCount = rules?.rows ?? game.rows ?? 3;
+  const tallReels = rowCount === 6;
   const bonusLength = rules?.bonus || game.bonus;
   const bonus = player?.rounds.find(r => r.game === game.id);
   const fishing=game.id==='bigbass';
   const multiplier = fishing ? (bonus?.feature?.batches?.[0]?.multiplier||1) : rules?.multiplier || game.multiplier || (game.id === 'neon' ? 2 : 1);
-  const paylines = game.paylines || (reelCount === 3 ? CLASSIC_PAYLINES : PAYLINES);
+  const paylines = Array.isArray(rules?.paylines) ? rules.paylines : game.paylines || (reelCount === 3 ? CLASSIC_PAYLINES : PAYLINES);
   const cabinetSkin = mechanicalCabinets[game.id];
   const mining = Boolean(game.cascading);
   const freeSpins = bonus?.remaining || 0;
   const [betText, setBetText] = useState(String(freeSpins ? bonus.bet : player?.preferences?.defaultBet||20));
   const bet = freeSpins ? bonus.bet : parseWager(betText);
-  const [grid, setGrid] = useState(() => game.initialGrid || INITIAL_GRID.slice(0,reelCount));
+  const [grid, setGrid] = useState(() => game.initialGrid || INITIAL_GRID.slice(0, reelCount).map((reel, column) =>
+    game.rows === 6 ? [...reel, ...INITIAL_GRID[(column + 2) % INITIAL_GRID.length]] : reel));
   const [moneyFish,setMoneyFish]=useState([]);
   const [spinning, setSpinning] = useState(false);
   const [stopped, setStopped] = useState(reelCount);
@@ -42,6 +51,7 @@ export default function GameScreen({ game, navigate }) {
   const [lastWin, setLastWin] = useState(0);
   const [message, setMessage] = useState(cabinetSkin ? 'READY · PULL HANDLE OR PRESS SPIN' : 'Your next escape begins with a spin.');
   const [showLines, setShowLines] = useState(false);
+  const [selectedLine, setSelectedLine] = useState(null);
   const [celebration, setCelebration] = useState(null);
   const [assetsReady, setAssetsReady] = useState(false);
   const [autoEnabled, setAutoEnabled] = useState(false);
@@ -123,12 +133,12 @@ export default function GameScreen({ game, navigate }) {
     if (!freeSpins && player.balance < bet) { notify('Lower your wager or claim your daily gift to keep exploring.',true); return false; }
     busyRef.current = true; setSpinning(true); setBusy(true); setStopped(0);
     stopGameEffects(); setCascade(0); setCollected(0); setCascadeFrame(null); setTumbling(false);
-    setMessage(cabinetSkin ? 'REELS IN MOTION' : 'A little anticipation…'); setResult(null); setShowLines(false);
+    setMessage(cabinetSkin ? 'REELS IN MOTION' : 'A little anticipation…'); setResult(null); setShowLines(false); setSelectedLine(null);
     if (sound && cabinetSkin) playTone('lever');
     const started = Date.now();
     requestRef.current ||= {game:game.id,bet,requestId:crypto.randomUUID()};
     try {
-      const data = await api('spin',requestRef.current);
+      const data = await api('spin',requestRef.current,player.id);
       requestRef.current = null;
       const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
       await pause(Math.max(0,(reduced ? 0 : turbo ? 350 : cabinetSkin ? 1350 : 1050)-(Date.now()-started)));
@@ -138,8 +148,9 @@ export default function GameScreen({ game, navigate }) {
         if (!mounted.current) { await reload(); return false; }
         setStopped(c+1);
         if (latest.current.sound) playColumnLandings(data.grid[c],c,{turbo,reduced});
-        if (!reduced) await pause(turbo ? 65 : 180);
+        if (!reduced) await pause(tallReels ? (turbo ? 100 : 220) : (turbo ? 65 : 180));
       }
+      if (tallReels && !reduced) await pause(turbo ? 180 : 300);
       if (data.cascades) {
         let total = 0;
         for (let i=0;i<data.cascades.length;i++) {
@@ -148,7 +159,7 @@ export default function GameScreen({ game, navigate }) {
           setGrid(frame.grid); setCascadeFrame(frame); setCascade(i + (frame.payout ? 1 : 0));
           total += frame.payout; setCollected(total);
           if (!frame.payout) break;
-          setMessage(`Gold vein found · +${formatCoins(frame.payout)} coins`);
+          setMessage(['Gold vein found · +{0} coins', frame.payout]);
           if (i>0 && latest.current.sound) frame.grid.forEach((reel,c)=>playColumnLandings(reel,c,{turbo,reduced}));
           if (!reduced) await pause(turbo ? 220 : 750);
           if (i < data.cascades.length-1) {
@@ -167,14 +178,18 @@ export default function GameScreen({ game, navigate }) {
       setBetText(String(data.bet)); setResult(finalFrame ? {...data,lines:finalFrame.lines} : data); setLastWin(data.payout);
       if (source === 'auto') setAutoRounds(count => count + 1);
       if(data.winCapped){
-        setMessage(`Maximum catch reached · +${formatCoins(data.payout)} coins`);
+        setMessage(['Maximum catch reached · +{0} coins', data.payout]);
         setCelebration({type:'win',amount:data.payout});
       } else if (data.bonusTriggered) {
         const awarded=data.bonusAwarded||bonusLength;
-        setMessage(fishing?`${awarded} free spins ${data.fishermenLanded?'added · next catch tier queued':'unlocked · time to go fishing'}.`:`${awarded} bonus spins unlocked. The adventure continues.`);
+        setMessage([fishing ? (data.fishermenLanded ? '{0} more free spins · next catch tier queued.' : '{0} free spins unlocked · time to go fishing.') : '{0} bonus spins unlocked. The adventure continues.', awarded]);
         setCelebration({type:'bonus',amount:awarded});
       } else if (data.payout) {
-        setMessage(fishing&&data.collectionPayout?`Catch collected · +${formatCoins(data.payout)} coins · ${data.multiplier}× fish value`:mining ? `${data.cascadeCount} golden ${data.cascadeCount===1?'cascade':'cascades'} · +${formatCoins(data.payout)} coins` : `${data.lines.length} winning ${data.lines.length===1?'line':'lines'} · +${formatCoins(data.payout)} coins${data.multiplier>1?` · ${data.multiplier}× bonus`:''}`);
+        setMessage(fishing && data.collectionPayout
+          ? ['Catch collected · +{0} coins · {1}× fish value', data.payout, data.multiplier]
+          : mining
+            ? [data.cascadeCount === 1 ? '{0} golden cascade · +{1} coins' : '{0} golden cascades · +{1} coins', data.cascadeCount, data.payout]
+            : [data.lines.length === 1 ? '{0} winning line · +{1} coins' : '{0} winning lines · +{1} coins', data.lines.length, data.payout]);
         if (data.payout>=data.bet*10) setCelebration({type:'win',amount:data.payout});
       } else setMessage(data.freeSpins ? 'Your next spin is on us.' : cabinetSkin ? 'READY · PULL HANDLE TO PLAY' : 'Every spin is a new story. Ready for yours?');
       if (latest.current.sound && (data.payout || data.bonusTriggered)) { playTone('win'); if (data.payout) playTone('coins'); }
@@ -191,57 +206,101 @@ export default function GameScreen({ game, navigate }) {
     }
   }
   spinRef.current = spin;
-  const winningCells = new Set((cascadeFrame?.lines||result?.lines||[]).flatMap(line=>line.cells.map(cell=>cell.join('-'))));
+  const wins = cascadeFrame?.lines || result?.lines || [];
+  const winningCells = new Set(wins.flatMap(line => line.cells.map(cell => cell.join('-'))));
+  const lineOptions = showLines
+    ? paylines.map((rows, index) => ({ index, cells: rows.map((row, column) => [column, row]) }))
+    : wins;
+  const inspectedLine = lineOptions.find(line => line.index === selectedLine);
+  const selectedCells = new Set(inspectedLine?.cells.map(cell => cell.join('-')));
   const fishValues=Object.fromEntries(moneyFish.map(fish=>[fish.cell.join('-'),fish.value]));
   const reelSymbols=game.symbolTypes||symbols;
-  const strips=fishing?Array.from({length:5},(_,c)=>Array.from({length:9},(_,r)=>reelSymbols[(r+c*2)%reelSymbols.length])):spinningGrid;
+  const strips = fishing
+    ? Array.from({ length: 5 }, (_, column) => Array.from({ length: 9 }, (_, row) => reelSymbols[(row + column * 2) % reelSymbols.length]))
+    : tallReels ? tallSpinningGrid : spinningGrid;
   const locked = spinning || freeSpins>0 || autoEnabled;
-  const displayedLines = showLines ? paylines.map((rows,index)=>({rows,index})) : (result?.lines||[]).map(line=>({rows:paylines[line.index],index:line.index}));
+  const displayedLines = showLines ? paylines.map((rows,index)=>({rows,index})) : wins.map(line=>({rows:paylines[line.index],index:line.index}));
   const hasWin = Boolean(result?.payout || result?.bonusTriggered);
   const canStart = Boolean(player && assetsReady && bet!==null && (freeSpins || player.balance>=bet));
-  const stopAutoButton = <button className={`auto-spin-button ${autoEnabled?'active':''}`} onClick={toggleAuto} disabled={!autoEnabled && (!canStart || Boolean(celebration))} aria-pressed={autoEnabled}><Icon name={autoEnabled?'stop':'auto'} />{autoEnabled?'Stop auto-spin':'Auto-spin'}</button>;
+  const status = Array.isArray(message)
+    ? t(message[0], ...message.slice(1).map(coins))
+    : t(message);
+  const winMultiplier = result?.payout && result.multiplier > 1 && !result.collectionPayout
+    ? ' ' + t('· {0}× bonus', result.multiplier)
+    : '';
+  const stopAutoButton = <button className={`auto-spin-button ${autoEnabled?'active':''}`} onClick={toggleAuto} disabled={!autoEnabled && (!canStart || Boolean(celebration))} aria-pressed={autoEnabled}><Icon name={autoEnabled?'stop':'auto'} />{autoEnabled?t('Stop auto-spin'):t('Auto-spin')}</button>;
 
   const reelDisplay=(
-<div className="reel-machine"><div className="corner-detail tl" /><div className="corner-detail tr" /><div className="corner-detail bl" /><div className="corner-detail br" /><span className="payline-mark">▶</span>
-            <div className="reels" aria-label="Slot reels" style={{gridTemplateColumns:`repeat(${reelCount},minmax(0,1fr))`}}>{grid.map((reel,c)=>{
-              const moving=spinning && c>=stopped;
-              return <div key={c} className={`reel ${moving?'spinning':''} ${spinning&&!moving?'stopping':''}`}><div className="reel-strip">{(moving?strips[c]:reel).map((type,r)=><div key={r} style={{'--cell-land-delay':`${r*(turbo?18:65)}ms`}} className={`cell ${spinning&&!moving?'landing-cell':''} ${!moving&&winningCells.has(`${c}-${r}`)?'winning':''} ${!moving&&type==='scatter'&&result?.bonusTriggered?'scatter-triggered':''}`}><Symbol type={type} game={game} />{fishing&&!moving&&type==='fish'?<span className={`fish-value ${result?.collectionPayout?'collected':''}`}>{formatCoins(fishValues[`${c}-${r}`]??(bet||20)*[2,5,10][c%3])}</span>:null}</div>)}</div></div>;
+    <div className={`reel-machine${inspectedLine ? ' inspecting-line' : ''}`}>
+      <div className="corner-detail tl"/><div className="corner-detail tr"/>
+      <div className="corner-detail bl"/><div className="corner-detail br"/>
+      {!tallReels && <span className="payline-mark">▶</span>}
+      <div className="reels" aria-label={tallReels ? t("Five reels, six rows") : t("Slot reels")}
+        style={{ gridTemplateColumns: `repeat(${reelCount}, minmax(0, 1fr))` }}>
+        {grid.map((reel, column) => {
+          const moving = spinning && column >= stopped;
+          const landing = spinning && !moving;
+          return <div key={column} className={`reel ${moving ? 'spinning' : ''} ${landing ? 'stopping' : ''}`}>
+            <div className="reel-strip">{(moving ? strips[column] : reel).map((type, row) => {
+              const cell = `${column}-${row}`;
+              const won = !moving && winningCells.has(cell);
+              const inspected = !moving && selectedCells.has(cell);
+              return <div key={row} style={{ '--cell-land-delay': `${row * (turbo ? 18 : 65)}ms` }}
+                className={`cell ${landing ? 'landing-cell' : ''} ${won ? 'winning' : ''} ${inspected ? 'line-cell' : ''} ${!moving && type === 'scatter' && result?.bonusTriggered ? 'scatter-triggered' : ''}`}>
+                <Symbol type={type} game={game}/>
+                {fishing && !moving && type === 'fish' && <span className={`fish-value ${result?.collectionPayout ? 'collected' : ''}`}>
+                  {coins(fishValues[cell] ?? (bet || 20) * [2, 5, 10][column % 3])}
+                </span>}
+              </div>;
             })}</div>
-            {displayedLines.length&&!spinning?<svg className="payline-svg" viewBox={`0 0 ${reelCount*100} 300`} preserveAspectRatio="none" aria-hidden="true">{displayedLines.map(({rows,index})=><polyline key={index} points={rows.map((r,c)=>`${c*100+50},${r*100+50}`).join(' ')} fill="none" stroke={lineColors[index%lineColors.length]} strokeWidth="2" />)}</svg>:null}
-          </div>
+          </div>;
+        })}
+      </div>
+      {!tallReels && displayedLines.length > 0 && !spinning &&
+        <svg className="payline-svg" viewBox={`0 0 ${reelCount * 100} 300`} preserveAspectRatio="none" aria-hidden="true">
+          {displayedLines.map(({ rows, index }) => <polyline key={index}
+            points={rows.map((row, column) => `${column * 100 + 50},${row * 100 + 50}`).join(' ')}
+            fill="none" stroke={lineColors[index % lineColors.length]} strokeWidth="2"/>)}
+        </svg>}
+    </div>
   );
 
   return <main className={`game-main ${game.id}`}>
-    <section className={`game-stage ${game.id}`} aria-label={game.name} style={{'--accent':game.accent}}>
-      <img className="stage-art" src={asset(game.id)} alt="" /><div className="stage-shade" />
+    <section className={`game-stage ${game.id}${tallReels ? ' tall-reels' : ''}`} aria-label={game.name} style={{'--accent':game.accent}}>
+      <img className="stage-art" src={game.stageAsset || asset(game.id)} alt="" />
+      {game.stageAsset && <img className="stage-art stage-art-detail" src={asset(game.id)} alt=""/>}
+      <div className="stage-shade" />
       <div className="ambient-motes" aria-hidden="true">{Array.from({length:18},(_,i)=><i key={i} style={{'--i':i}} />)}</div>
-      <div className="stage-navigation"><button className="back-button" disabled={spinning} onClick={()=>navigate('all')}><span>←</span> Back to lobby</button><span className="stage-collection">{game.subtitle}</span><div><button className="icon-button" onClick={()=>setModal({kind:'guide'})} aria-label="How to play"><Icon name="info" /></button><button className="icon-button" onClick={()=>setSound(!sound)} aria-label={sound?'Mute sound':'Enable sound'} aria-pressed={sound}><Icon name={sound?'volume':'mute'} /></button></div></div>
-      <div className="game-logo"><span className="logo-ornament">✧ ───── ✦ ───── ✧</span><h1><span>{game.title[0]}</span><em>{game.title[1]}</em></h1><p>{game.copy}</p>{fishing?<span className="recreation-label">VIRTUAL-COIN RECREATION · ORIGINAL ARTWORK</span>:null}</div>
-      <div className={`bonus-ribbon ${freeSpins?'active':''}`}><span>✦</span>{freeSpins?<strong>{freeSpins} FREE SPINS REMAINING {multiplier>1?`· ${multiplier}× WINS`:''}</strong>:<><strong>{game.label}</strong><span className="ribbon-divider" /><span>{fishing?'3 / 4 / 5 scatters → 10 / 15 / 20 free spins':`3 bonus symbols unlock ${bonusLength} free spins`}</span></>}<span>✦</span></div>
-      {cabinetSkin?<MechanicalCabinet game={game} skin={cabinetSkin} reels={reelDisplay} state={{spinning,assetsReady,canStart,locked,blocked:Boolean(celebration)||autoEnabled,freeSpins,bonusLength,multiplier,bet,betText:freeSpins?String(bonus.bet):betText,balance:player?.balance??null,lastWin,message,hasWin,result,showLines,turbo,autoEnabled,autoRounds}}
+      <div className="stage-navigation"><button className="back-button" disabled={spinning} onClick={()=>navigate('all')}><span>←</span>{" " + t("Back to lobby")}</button><span className="stage-collection">{t(game.subtitle)}</span><div><button className="icon-button" onClick={()=>setModal({kind:'guide'})} aria-label={t("How to play")}><Icon name="info" /></button><button className="icon-button" onClick={()=>setSound(!sound)} aria-label={sound?t("Mute sound"):t("Enable sound")} aria-pressed={sound}><Icon name={sound?'volume':'mute'} /></button></div></div>
+      <div className="game-logo"><span className="logo-ornament">✧ ───── ✦ ───── ✧</span><h1><span>{game.title[0]}</span><em>{game.title[1]}</em></h1><p>{t(game.copy)}</p>{fishing?<span className="recreation-label">{t("VIRTUAL-COIN RECREATION · ORIGINAL ARTWORK")}</span>:null}</div>
+      <div className={`bonus-ribbon ${freeSpins?'active':''}`}><span>✦</span>{freeSpins?<strong>{freeSpins}{" " + t("FREE SPINS REMAINING") + " "}{multiplier>1?t('· {0}× WINS', multiplier):''}</strong>:<><strong>{t(game.label)}</strong><span className="ribbon-divider" /><span>{fishing?t("3 / 4 / 5 scatters → 10 / 15 / 20 free spins"):t('3 bonus symbols unlock {0} free spins', bonusLength)}</span></>}<span>✦</span></div>
+      {cabinetSkin?<MechanicalCabinet game={game} skin={cabinetSkin} reels={reelDisplay} state={{spinning,assetsReady,canStart,locked,blocked:Boolean(celebration)||autoEnabled,freeSpins,bonusLength,multiplier,bet,betText:freeSpins?String(bonus.bet):betText,balance:player?.balance??null,lastWin,message:status + winMultiplier,hasWin,result,showLines,turbo,autoEnabled,autoRounds}}
         onSpin={()=>spin('button')} onBet={setBetText} onLines={()=>setShowLines(!showLines)} onTurbo={()=>setTurbo(!turbo)}
         onPaytable={()=>setModal({kind:'paytable',game,bet:bet||20})} onHistory={()=>setModal({kind:'history'})} autoButton={stopAutoButton}/>:<div className={`cabinet-frame ${tumbling?'tumbling':''}`}>
         <div className={`slot-cabinet ${hasWin?'has-win':''}`}>
+          {tallReels && <div className="cabinet-housing" aria-hidden="true"><span/></div>}
           {mining ? <div className="cabinet-rivets" aria-hidden="true">{Array.from({length:8},(_,i)=><i key={i} />)}</div> : null}
-          {!assetsReady?<div className="cabinet-loading" role="status"><span>✦</span>Preparing your world…</div>:null}
+          {!assetsReady?<div className="cabinet-loading" role="status"><span>✦</span>{t("Preparing your world…")}</div>:null}
           {mining?<MineDetails cascades={cascade} collected={collected} freeSpins={freeSpins} />:null}
-          {fishing?<BassDetails game={game} feature={bonus?.feature||result?.feature} freeSpins={freeSpins} result={result}/>:null}<div className="cabinet-top"><span>✧</span><div /><strong>{freeSpins?'BONUS ROUND':fishing?'FIVE REELS · TEN PAYLINES · FISH & COLLECT':`${reelCount===3?'THREE':'FIVE'} REELS OF POSSIBILITY`}</strong><div /><span>✧</span></div>
+          {fishing?<BassDetails game={game} feature={bonus?.feature||result?.feature} freeSpins={freeSpins} result={result}/>:null}<div className="cabinet-top"><span>✧</span><div /><strong>{freeSpins?t("BONUS ROUND"):tallReels?t("5 REELS · 6 ROWS · 10 PAYLINES"):fishing?t("FIVE REELS · TEN PAYLINES · FISH & COLLECT"):t('{0} REELS OF POSSIBILITY', reelCount === 3 ? t('THREE') : t('FIVE'))}</strong><div /><span>✧</span></div>
           {reelDisplay}
-          <div className={`result-marquee ${hasWin?'winning-message':''}`} role="status" aria-live="polite"><span>✦</span>{message}<span>✦</span></div>
-          <div className="cabinet-controls"><div className="game-stat"><small>VIRTUAL BALANCE</small><strong><span className="stat-coin">✦</span>{player?formatCoins(player.balance):'—'}</strong></div>
-            <div className="bet-control"><label htmlFor="coin-wager">{freeSpins?'BONUS BET · LOCKED':'YOUR WAGER'}</label><div className={`bet-stepper ${bet===null?'invalid':''}`}><button aria-label="Lower bet" disabled={locked||bet===MIN_BET} onClick={()=>setBetText(String(nextBet(bet||20,-1)))}>−</button><input id="coin-wager" aria-label="Wager in coins" type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" maxLength={7} value={freeSpins?String(bonus.bet):betText} disabled={locked} onChange={e=>setBetText(e.target.value)} aria-invalid={bet===null} aria-describedby="wager-help" /><button aria-label="Raise bet" disabled={locked||bet===MAX_BET} onClick={()=>setBetText(String(nextBet(bet||20,1)))}>+</button></div></div>
-            <button className="spin-button" onClick={()=>spin('button')} disabled={spinning||!canStart||Boolean(celebration)||autoEnabled}><Icon name="spin" /><span>{spinning?'SPINNING':freeSpins?'FREE SPIN':'SPIN'}</span><small>{freeSpins?'ON THE HOUSE':'LET’S FIND SOME MAGIC'}</small></button>
-            <div className="game-stat last-win"><small>LAST WIN</small><strong>{formatCoins(lastWin)}</strong></div>
+          {tallReels && !spinning && lineOptions.length > 0 && <PaylinePicker lines={lineOptions} wins={wins} rows={rowCount}
+            selected={selectedLine} onSelect={setSelectedLine} multiplier={result?.multiplier ?? 1}/>}
+          <div className={`result-marquee ${hasWin?'winning-message':''}`} role="status" aria-live="polite"><span>✦</span>{status}{winMultiplier}<span>✦</span></div>
+          <div className="cabinet-controls"><div className="game-stat"><small>{t("VIRTUAL BALANCE")}</small><strong><span className="stat-coin">✦</span>{player?coins(player.balance):'—'}</strong></div>
+            <div className="bet-control"><label htmlFor="coin-wager">{freeSpins?t("BONUS BET · LOCKED"):t("YOUR WAGER")}</label><div className={`bet-stepper ${bet===null?'invalid':''}`}><button aria-label={t("Lower bet")} disabled={locked||bet===MIN_BET} onClick={()=>setBetText(String(nextBet(bet||20,-1)))}>−</button><input id="coin-wager" aria-label={t("Wager in coins")} type="text" inputMode="numeric" pattern="[0-9]*" autoComplete="off" maxLength={7} value={freeSpins?String(bonus.bet):betText} disabled={locked} onChange={e=>setBetText(e.target.value)} aria-invalid={bet===null} aria-describedby="wager-help" /><button aria-label={t("Raise bet")} disabled={locked||bet===MAX_BET} onClick={()=>setBetText(String(nextBet(bet||20,1)))}>+</button></div></div>
+            <button className="spin-button" onClick={()=>spin('button')} disabled={spinning||!canStart||Boolean(celebration)||autoEnabled}><Icon name="spin" /><span>{spinning?t("SPINNING"):freeSpins?t("FREE SPIN"):t("SPIN")}</span><small>{freeSpins?t("ON THE HOUSE"):t("LET’S FIND SOME MAGIC")}</small></button>
+            <div className="game-stat last-win"><small>{t("LAST WIN")}</small><strong>{coins(lastWin)}</strong></div>
           </div>
-          <div className="round-options"><span id="wager-help" className={bet===null?'wager-error':''}>{bet===null?'Enter a whole number from 1 to 10,000.':autoEnabled?`Auto-spin on · ${autoRounds} rounds completed. Stop whenever you like.`:freeSpins?'Your triggering wager is locked for bonus spins.':'Type any whole-coin wager from 1 to 10,000.'}</span>{stopAutoButton}</div>
-          <div className="cabinet-bottom"><div><button onClick={()=>setModal({kind:'paytable',game,bet:bet||20})}><Icon name="book" />Paytable</button><button className={showLines?'enabled':''} onClick={()=>setShowLines(!showLines)} aria-pressed={showLines}><Icon name="slots" />{paylines.length} paylines</button><button className={turbo?'enabled':''} onClick={()=>setTurbo(!turbo)} aria-pressed={turbo}><Icon name="bolt" />Quick spin</button></div><button onClick={()=>setModal({kind:'history'})}><Icon name="clock" />Spin history</button></div>
+          <div className="round-options"><span id="wager-help" className={bet===null?'wager-error':''}>{bet===null?t("Enter a whole number from 1 to 10,000."):autoEnabled?t('Auto-spin on · {0} rounds completed. Stop whenever you like.', autoRounds):freeSpins?t("Your triggering wager is locked for bonus spins."):t("Type any whole-coin wager from 1 to 10,000.")}</span>{stopAutoButton}</div>
+          <div className="cabinet-bottom"><div><button onClick={()=>setModal({kind:'paytable',game,bet:bet||20})}><Icon name="book" />{t("Paytable")}</button><button className={showLines?'enabled':''} onClick={()=>{setShowLines(!showLines);setSelectedLine(null);}} aria-pressed={showLines}><Icon name="slots" />{paylines.length}{" " + t("paylines")}</button><button className={turbo?'enabled':''} onClick={()=>setTurbo(!turbo)} aria-pressed={turbo}><Icon name="bolt" />{t("Quick spin")}</button></div><button onClick={()=>setModal({kind:'history'})}><Icon name="clock" />{t("Spin history")}</button></div>
         </div>
       </div>}
-      <div className="stage-bottom"><span>100% VIRTUAL COINS <i>✦</i> A LITTLE ESCAPE FROM THE EVERYDAY</span><span><kbd>SPACE</kbd> TO SPIN</span></div>
+      <div className="stage-bottom"><span>{t("100% VIRTUAL COINS") + " "}<i>✦</i>{" " + t("A LITTLE ESCAPE FROM THE EVERYDAY")}</span><span><kbd>{t("SPACE")}</kbd>{" " + t("TO SPIN")}</span></div>
       {result?.payout && !spinning ? <CoinRain key={`coins-${result.id}`} /> : null}
-      {celebration?<div className="celebration-backdrop"><div className="celebration" role="dialog" aria-modal="true" aria-label={celebration.type==='bonus'?'Free spin bonus':'Big win'}><span className="celebration-star">✦</span><p>{celebration.type==='bonus'?'YOU FOUND A LITTLE EXTRA MAGIC':'A MOMENT WORTH CELEBRATING'}</p><h2>{celebration.type==='bonus'?'Bonus unlocked':'Big win'}</h2><strong>{celebration.type==='bonus'?celebration.amount:'+'+formatCoins(celebration.amount)}</strong><span>{celebration.type==='bonus'?`FREE SPINS ${multiplier>1?`· ${multiplier}× WINS`:''}`:'VIRTUAL COINS'}</span><button className="primary-button" autoFocus onClick={()=>setCelebration(null)}>{celebration.type==='bonus'?'Enter the bonus':'Continue'}<Icon name="arrow" /></button>{autoEnabled?<><p>Auto-spin continues after this celebration.</p><button className="celebration-stop" onClick={()=>controllerRef.current.stop()}>Stop auto-spin</button></>:null}</div></div>:null}
+      {celebration?<div className="celebration-backdrop"><div className="celebration" role="dialog" aria-modal="true" aria-label={celebration.type==='bonus'?t("Free spin bonus"):t("Big win")}><span className="celebration-star">✦</span><p>{celebration.type==='bonus'?t("YOU FOUND A LITTLE EXTRA MAGIC"):t("A MOMENT WORTH CELEBRATING")}</p><h2>{celebration.type==='bonus'?t("Bonus unlocked"):t("Big win")}</h2><strong>{celebration.type==='bonus'?celebration.amount:'+'+coins(celebration.amount)}</strong><span>{celebration.type==='bonus'?t('FREE SPINS {0}', multiplier > 1 ? t('· {0}× WINS', multiplier) : ''):t("VIRTUAL COINS")}</span><button className="primary-button" autoFocus onClick={()=>setCelebration(null)}>{celebration.type==='bonus'?t("Enter the bonus"):t("Continue")}<Icon name="arrow" /></button>{autoEnabled?<><p>{t("Auto-spin continues after this celebration.")}</p><button className="celebration-stop" onClick={()=>controllerRef.current.stop()}>{t("Stop auto-spin")}</button></>:null}</div></div>:null}
     </section>
-    <section className="game-story"><div><span className="eyebrow">A WORLD WORTH GETTING LOST IN</span><h2>{game.name}</h2><p>{game.description}</p></div><div className="game-facts"><span><strong>{reelCount}</strong>REELS</span><span><strong>{paylines.length}</strong>PAYLINES</span><span><strong>{fishing?'10–20':bonusLength}</strong>FREE SPINS</span><span><strong>{multiplier>1?`${multiplier}×`:'✦'}</strong>{multiplier>1?'BONUS WINS':'WILD SYMBOLS'}</span></div></section>
-    <button className="another-world" onClick={()=>navigate('all')}>Explore another world<Icon name="arrow" /></button>
+    <section className="game-story"><div><span className="eyebrow">{t("A WORLD WORTH GETTING LOST IN")}</span><h2>{game.name}</h2><p>{t(game.description)}</p></div><div className="game-facts"><span><strong>{reelCount}</strong>{t("REELS")}</span><span><strong>{paylines.length}</strong>{t("PAYLINES")}</span><span><strong>{fishing?'10–20':bonusLength}</strong>{t("FREE SPINS")}</span><span><strong>{multiplier>1?`${multiplier}×`:'✦'}</strong>{multiplier>1?t("BONUS WINS"):t("WILD SYMBOLS")}</span></div></section>
+    <button className="another-world" onClick={()=>navigate('all')}>{t("Explore another world")}<Icon name="arrow" /></button>
   </main>;
 }

@@ -5,9 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#100e16" />
   <meta name="description" content="NEIROSLOP BURMALDA — eight immersive virtual-coin games and a little Miami magic." />
-  <script>try{document.documentElement.dataset.theme=localStorage.getItem('lounge-theme')==='light'?'light':'dark'}catch{document.documentElement.dataset.theme='dark'}</script>
+  <script>
+    (() => {
+      const root = document.documentElement;
+      root.dataset.theme = 'dark';
+      root.dataset.style = 'standard';
+      try {
+        if (localStorage.getItem('lounge-language') === 'ru') root.lang = 'ru';
+        const theme = localStorage.getItem('lounge-theme');
+        const style = localStorage.getItem('lounge-style');
+        if (theme === 'light') root.dataset.theme = 'light';
+        if (style === 'glass' || (style === null && theme === 'glass')) root.dataset.style = 'glass';
+      } catch { /* The default appearance is ready before React loads. */ }
+    })();
+  </script>
   <title>NEIROSLOP BURMALDA — Virtual Casino</title>
   <link rel="icon" href="/favicon.svg" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/assets/push-icon.png" />
   <link rel="preload" as="image" href="/assets/neiroslop-logo.png" />
   <link rel="preload" as="image" href="/assets/miami-startup.png" media="(min-width:651px)" />
   <link rel="preload" as="image" href="/assets/miami-startup-mobile.png" media="(max-width:650px)" />
@@ -17,7 +32,12 @@
   <style>
     html.is-starting,html.is-starting body{overflow:hidden}
     #startup-screen{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;overflow:hidden;background:#17142f;color:#fff;font-family:Arial,sans-serif;isolation:isolate;transition:opacity .65s ease,visibility .65s}
-    #startup-screen.startup-leaving{opacity:0;visibility:hidden;pointer-events:none}
+    .startup-leaving #startup-screen{opacity:0;visibility:hidden;pointer-events:none}
+    #startup-account{display:none}
+    .startup-access #startup-screen{position:relative;min-height:100svh;overflow:clip}
+    .startup-access #startup-account{display:block;width:100%}
+    .startup-access :is(.startup-content,#startup-skip,.startup-footer){display:none}
+    .startup-access .toasts{z-index:10001}
     .startup-art{position:absolute;inset:0;z-index:-3}
     .startup-art img{width:100%;height:100%;object-fit:cover;object-position:center;animation:miami-drift 12s ease-out both}
     .startup-shade{position:absolute;inset:0;z-index:-2;background:linear-gradient(180deg,#1414335e,transparent 35%,#17143333 65%,#11112cbd),radial-gradient(ellipse at 50% 43%,#100d244d,transparent 65%)}
@@ -50,18 +70,18 @@
   <section id="startup-screen" aria-label="Welcome to NEIROSLOP BURMALDA">
     <picture class="startup-art" aria-hidden="true"><source media="(max-width:650px)" srcset="/assets/miami-startup-mobile.png" /><img src="/assets/miami-startup.png" alt="" fetchpriority="high" /></picture>
     <div class="startup-shade"></div><div class="startup-haze"></div>
-    <button id="startup-skip" type="button">Skip intro <span aria-hidden="true">↗</span></button>
+    <button id="startup-skip" type="button"><span data-message="Skip intro">Skip intro</span> <span aria-hidden="true">↗</span></button>
     <div class="startup-content">
-      <p class="startup-kicker">MIAMI NIGHTS · VIRTUAL COINS</p>
+      <p class="startup-kicker" data-message="MIAMI NIGHTS · VIRTUAL COINS">MIAMI NIGHTS · VIRTUAL COINS</p>
       <h1 class="startup-title"><img src="/assets/neiroslop-logo.png" alt="NEIROSLOP BURMALDA" width="1792" height="896" fetchpriority="high" /></h1>
-      <p class="startup-subtitle">A LITTLE NEON. A WORLD OF POSSIBILITY.</p>
-      <div class="startup-loading" role="status"><span class="startup-loading-track" aria-hidden="true"><i></i></span><span>SETTING THE SCENE</span></div>
+      <p class="startup-subtitle" data-message="A LITTLE NEON. A WORLD OF POSSIBILITY.">A LITTLE NEON. A WORLD OF POSSIBILITY.</p>
+      <div class="startup-loading" role="status"><span class="startup-loading-track" aria-hidden="true"><i></i></span><span data-message="SETTING THE SCENE">SETTING THE SCENE</span></div>
     </div>
-    <div class="startup-footer"><span>100% VIRTUAL COINS · MADE FOR PLAY</span><span>PALMS · SKYLINES · GOOD TIMES</span></div>
+    <div id="startup-account"></div>
+    <div class="startup-footer"><span data-message="100% VIRTUAL COINS · MADE FOR PLAY">100% VIRTUAL COINS · MADE FOR PLAY</span><span data-message="PALMS · SKYLINES · GOOD TIMES">PALMS · SKYLINES · GOOD TIMES</span></div>
   </section>
-  <div id="root" inert aria-hidden="true"></div>
+  <div id="root"></div>
   <noscript><p style="padding:3rem;text-align:center;font-family:sans-serif">Enable JavaScript to explore NEIROSLOP BURMALDA.</p><style>#startup-screen{display:none}</style></noscript>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
-

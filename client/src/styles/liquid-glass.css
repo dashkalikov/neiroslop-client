@@ -1,0 +1,144 @@
+/* Translucent navigation floats above the game artwork and readable content surfaces. */
+:root[data-style="glass"] {
+  color-scheme: dark;
+  --bg: #10162b;
+  --chrome: #24304c;
+  --surface: #222d48;
+  --soft: #2b3857;
+  --text: #f5f7ff;
+  --muted: #bdcbe5;
+  --border: #596887;
+  --active: #3f4d79;
+  --active-text: #eef1ff;
+  --glass-edge: #dbe8ff66;
+  --glass-sheen: linear-gradient(125deg, #f7faff2c, #a7c2ff0c 37%, #819ce02a 100%);
+  --glass-depth: inset 0 1px 0 #ffffff50, inset 0 -1px 0 #d4e1ff16, 0 8px 28px #040c284d;
+  --glass-tint: #1d2948ba;
+  --glass-control: linear-gradient(150deg, #9daff055, #a1b6e51f);
+  --glass-control-edge: #c0d1ff66;
+  --glass-control-depth: inset 0 1px 0 #e9f2ff38, 0 3px 8px #0d19333b;
+  --glass-panel-edge: #cbdcff40;
+  --glass-panel-depth: 0 9px 28px #0c142b40;
+  --glass-focus: #f3f8ff;
+  --glass-wallpaper-panel: #222d48ed;
+  --glass-wallpaper-scrim: linear-gradient(138deg, #17234126, #10192b4d 85%);
+  --glass-canvas:
+    radial-gradient(ellipse at 13% 9%, #514677 0, transparent 47%),
+    radial-gradient(ellipse at 83% 14%, #294c70 0, transparent 56%),
+    linear-gradient(155deg, #212641, #10162b 79%);
+}
+:root[data-theme="light"][data-style="glass"] {
+  color-scheme: light;
+  --bg: #edf3fe;
+  --chrome: #f3f6fe;
+  --surface: #fbfcff;
+  --soft: #edf2fa;
+  --text: #202a44;
+  --muted: #4f5c76;
+  --border: #cbd5ea;
+  --active: #e1e9fb;
+  --active-text: #304478;
+  --glass-edge: #f7faffeb;
+  --glass-sheen: linear-gradient(125deg, #ffffffb3, #f5f9ff2b 44%, #deebff66 100%);
+  --glass-depth: inset 0 1px 1px #fff, inset 0 -1px 0 #c3d0e654, 0 8px 28px #3d548834;
+  --glass-tint: #e9f1ffad;
+  --glass-control: linear-gradient(150deg, #ffffffc9, #cedcfa78);
+  --glass-control-edge: #9cafd7a0;
+  --glass-control-depth: inset 0 1px 0 #fff, 0 3px 8px #5d72a129;
+  --glass-panel-edge: #91a5ca65;
+  --glass-panel-depth: 0 9px 28px #3d548824;
+  --glass-focus: #345797;
+  --glass-wallpaper-panel: #f8fbfff2;
+  --glass-wallpaper-scrim: linear-gradient(138deg, #e1ebfb1a, #e8edfa3d 85%);
+  --glass-canvas:
+    radial-gradient(ellipse at 13% 9%, #ece0fa 0, transparent 47%),
+    radial-gradient(ellipse at 83% 14%, #d1e6ff 0, transparent 56%),
+    linear-gradient(155deg, #f4f7ff, #e6edfb 79%);
+}
+[data-style="glass"] body {
+  background: var(--glass-canvas);
+  background-attachment: fixed;
+}
+[data-style="glass"] .has-wallpaper {
+  --wallpaper-panel: var(--glass-wallpaper-panel);
+  --wallpaper-edge: var(--glass-panel-edge);
+}
+[data-style="glass"] .app-wallpaper::after {
+  background: var(--glass-wallpaper-scrim);
+}
+[data-style="glass"] :is(.sidebar,.topbar,.account-tabs,.appearance-mode,.security-switch,.info-dialog.settings-dialog) {
+  background: var(--glass-sheen), var(--chrome);
+  border: 1px solid var(--glass-edge);
+  box-shadow: var(--glass-depth);
+}
+[data-style="glass"] .sidebar {
+  inset: 12px auto 12px 12px;
+  width: 222px;
+  height: auto;
+  border-radius: 24px;
+}
+[data-style="glass"] .topbar {
+  position: sticky;
+  top: 10px;
+  z-index: 10;
+  margin: 10px 16px 0 10px;
+  padding-inline: clamp(12px, 3vw, 32px);
+  border-radius: 19px;
+}
+[data-style="glass"] :is(.wallet,.theme-toggle,.settings-button,.nav-item.active,.filter.active,.appearance-mode button[aria-pressed="true"],.security-switch button[aria-pressed="true"]) {
+  color: var(--text);
+  background: var(--glass-control), var(--soft);
+  border: 1px solid var(--glass-control-edge);
+  border-radius: 999px;
+  box-shadow: var(--glass-control-depth);
+}
+[data-style="glass"] :is(.topbar .icon-button,.sidebar-bottom,.sidebar-bottom small) { color: var(--muted); }
+[data-style="glass"] :is(.account-summary,.account-content,.game-category-card) {
+  border-color: var(--glass-panel-edge);
+  border-radius: 20px;
+  box-shadow: var(--glass-panel-depth);
+}
+[data-style="glass"] .account-tabs { margin: 10px 10px 0; padding: 4px; border-radius: 14px; }
+[data-style="glass"] .account-tabs button { padding: 11px 12px; border: 1px solid transparent; border-radius: 10px; }
+[data-style="glass"] .account-tabs button[aria-selected="true"] {
+  color: var(--text);
+  background: var(--glass-control), var(--active);
+  border-color: var(--glass-control-edge);
+}
+[data-style="glass"] .appearance-mode { border-radius: 999px; }
+[data-style="glass"] :is(.search-box,.catalog-tools select) { border-radius: 999px; }
+[data-style="glass"] .info-dialog.settings-dialog { border-radius: 24px; }
+[data-style="glass"] .info-dialog .info-top .icon-button { color: var(--text); }
+[data-style="glass"] .secondary-button { border-color: var(--glass-control-edge); color: var(--text); background: var(--soft); }
+[data-style="glass"] :is(.topbar,.sidebar,.info-dialog.settings-dialog) :focus-visible {
+  outline: 2px solid var(--glass-focus);
+  outline-offset: 2px;
+}
+@supports (backdrop-filter: blur(1px)) {
+  [data-style="glass"] :is(.sidebar,.topbar,.info-dialog.settings-dialog) {
+    background: var(--glass-sheen), var(--glass-tint);
+    backdrop-filter: blur(22px) saturate(155%);
+  }
+}
+@media (max-width: 1150px) {
+  [data-style="glass"] .sidebar { width: 184px; }
+}
+@media (max-width: 900px) {
+  [data-style="glass"] .sidebar { width: 62px; inset-inline-start: 6px; border-radius: 19px; }
+  [data-style="glass"] .topbar { margin-inline: 6px 9px; padding-inline: 10px; }
+}
+@media (max-width: 650px) {
+  .appearance-mode { flex-wrap: wrap; justify-content: flex-start; }
+  .settings-section-heading:has(.appearance-mode) { align-items: flex-start; flex-direction: column; }
+  [data-style="glass"] .sidebar { width: 49px; inset: 6px auto 6px 4px; padding-inline: 4px; }
+  [data-style="glass"] .topbar { top: 6px; margin: 6px 6px 0 2px; padding-inline: 7px; border-radius: 14px; }
+  [data-style="glass"] .account-tabs button { padding: 7px 5px; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  [data-style="glass"] :is(.sidebar,.topbar,.info-dialog.settings-dialog) {
+    background: var(--chrome);
+    border-color: var(--glass-focus);
+    backdrop-filter: none;
+  }
+  [data-style="glass"] .has-wallpaper { --wallpaper-panel: var(--surface); }
+}

@@ -1,0 +1,278 @@
+.tall-reels {
+  --cell-height: clamp(54px, 7.3vw, 99px);
+  --cabinet-frame: url('/assets/cosmic-cabinet-frame.png');
+  --housing-cap: 24;
+  --housing-rail: 12;
+  --housing-foot: 8;
+  --panel-top: 17.6;
+  --panel-side: 8.5;
+  --panel-base: 2.2;
+  --reel-light: #a7d8ff;
+  --reel-border: #426a9b;
+  --reel-divider: #8ec9ff24;
+  --reel-shell: linear-gradient(125deg, #202d49, #0b1325 45%, #25324f);
+  --reel-frame: linear-gradient(135deg, #7092b2, #192842 26%, #0a1325 55%, #496994);
+  --reel-glass: radial-gradient(ellipse at 50% 10%, #5d91f339, transparent 75%), linear-gradient(110deg, #101f3d, #080e20 65%, #122340);
+  --reel-trim: repeating-linear-gradient(90deg, #a1caff88 0 3px, transparent 3px 8px);
+  --console-button: linear-gradient(#a6e8fc, #5fa7d8 62%, #4388bd);
+  --console-button-ink: #081d32;
+  --console-deck: linear-gradient(110deg, #36547055, #07152a80 44%, #1b355999), repeating-linear-gradient(0deg, #c5e5ff0b 0 1px, transparent 1px 3px);
+}
+
+.candy.tall-reels {
+  --cabinet-frame: url('/assets/candy-cabinet-frame.png');
+  --housing-cap: 29;
+  --housing-rail: 18;
+  --housing-foot: 8;
+  --panel-top: 20.4;
+  --panel-side: 11.7;
+  --panel-base: 2.6;
+  --reel-light: #ffd0a1;
+  --reel-border: #dc7f9e;
+  --reel-divider: #ffbdd339;
+  --reel-shell: linear-gradient(135deg, #692348, #33132f 53%, #571a37);
+  --reel-frame: linear-gradient(135deg, #f2a5bb, #6c284c 44%, #a65779);
+  --reel-glass: radial-gradient(ellipse at 48% 0, #c24f8566, transparent 75%), linear-gradient(110deg, #4a1638, #270e28 66%, #461735);
+  --reel-trim: linear-gradient(90deg, #ffb1b3, #ffe1ab, #ff94bf);
+  --console-button: linear-gradient(#fff0e4, #ffbacf 54%, #ee779c);
+  --console-button-ink: #48182f;
+  --console-deck: linear-gradient(180deg, #ffb5c936, #8d3b6277 25%, #3b162c99 67%, #d8739c35);
+}
+
+.dragon.tall-reels {
+  --cabinet-frame: url('/assets/dragon-cabinet-frame.png');
+  --housing-cap: 28;
+  --housing-rail: 18;
+  --housing-foot: 8;
+  --panel-top: 18.6;
+  --panel-side: 11.2;
+  --panel-base: 2.5;
+  --reel-light: #f4d391;
+  --reel-border: #92703e;
+  --reel-divider: #c1d98e26;
+  --reel-shell: linear-gradient(125deg, #34402a, #121d18 53%, #302d20);
+  --reel-frame: linear-gradient(135deg, #b19659, #373c26 42%, #8e7344);
+  --reel-glass: radial-gradient(ellipse at 50% 0, #7b9d4a43, transparent 76%), linear-gradient(110deg, #1d3125, #0e1a16 60%, #213425);
+  --reel-trim: linear-gradient(90deg, #9d823f, #e8c786, #766534);
+  --console-button: linear-gradient(#dddfaa, #90b488 58%, #5e926c);
+  --console-button-ink: #10281a;
+  --console-deck: linear-gradient(115deg, #8d683b55, #211b1499 55%, #8d683b55), repeating-linear-gradient(12deg, #be9a5710 0 1px, transparent 1px 4px);
+}
+
+.tall-reels.game-stage { border-color: var(--reel-border); }
+.tall-reels .stage-art { object-position: center bottom; }
+.tall-reels .stage-art-detail {
+  z-index: -3;
+  height: auto;
+  mask-image: linear-gradient(#000 32%, #000 43%, transparent 82%);
+}
+.tall-reels .stage-shade {
+  z-index: -2;
+  background: linear-gradient(180deg, #090a1830, transparent 34%, #090a1666);
+}
+.tall-reels .cabinet-frame {
+  max-width: 1000px;
+  margin-inline: auto;
+  container-type: inline-size;
+}
+.tall-reels .slot-cabinet {
+  isolation: isolate;
+  padding: calc(var(--panel-top) * 1cqw + 4px) calc(var(--housing-rail) * .94cqw) calc(var(--housing-foot) * .65cqw);
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  filter: drop-shadow(0 16px 24px #0009);
+}
+.tall-reels .slot-cabinet::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: calc(var(--panel-top) * 1cqw) calc(var(--panel-side) * 1cqw) calc(var(--panel-base) * 1cqw);
+  border-radius: 12px;
+  background: var(--console-deck), var(--reel-shell);
+  box-shadow: inset 0 0 0 1px var(--reel-border), inset 0 0 22px #0009;
+}
+.cabinet-housing {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+/* Keep the cap and foot at the image's native aspect ratio. Only the long rails stretch. */
+.cabinet-housing::before, .cabinet-housing::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  background: var(--cabinet-frame) center top / 100% auto no-repeat;
+}
+.cabinet-housing::before { top: 0; height: calc(var(--housing-cap) * 1cqw); }
+.cabinet-housing::after {
+  bottom: 0;
+  height: calc(var(--housing-foot) * 1cqw);
+  background-position: center bottom;
+}
+.cabinet-housing > span {
+  position: absolute;
+  inset: calc(var(--housing-cap) * 1cqw - .5px) 0 calc(var(--housing-foot) * 1cqw - .5px);
+  border-image-source: var(--cabinet-frame);
+  border-image-slice: calc(var(--housing-cap) * 1%) calc(var(--housing-rail) * 1%) calc(var(--housing-foot) * 1%);
+  border-image-width: 0 calc(var(--housing-rail) * 1%);
+}
+.tall-reels .slot-cabinet .reel-machine {
+  padding: clamp(3px, .64vw, 8px);
+  border-color: var(--reel-border);
+  background: var(--reel-frame);
+  box-shadow: inset 0 0 0 1px #fff3, 0 4px 8px #0006;
+}
+.tall-reels .corner-detail { display: none; }
+.tall-reels .slot-cabinet .cabinet-controls {
+  background: var(--console-deck);
+  border-block: 1px solid var(--reel-border);
+  border-inline: 0;
+  border-radius: 0;
+  box-shadow: inset 0 2px 4px #0005, inset 0 1px #fff2;
+}
+.tall-reels .cabinet-top, .tall-reels .result-marquee, .tall-reels .cabinet-controls,
+.tall-reels .round-options, .tall-reels .cabinet-bottom, .tall-reels .payline-picker {
+  position: relative;
+  z-index: 3;
+}
+.tall-reels .cabinet-top { height: clamp(34px, 5cqw, 50px); }
+.tall-reels .result-marquee {
+  background: linear-gradient(90deg, transparent, #05040c55 28%, #05040c55 72%, transparent);
+}
+.tall-reels .cabinet-bottom { border-color: var(--reel-divider); }
+.tall-reels .bet-stepper, .tall-reels .auto-spin-button {
+  background: #0b080e60;
+  border-color: var(--reel-border);
+}
+.tall-reels .cabinet-controls .spin-button {
+  border-color: var(--reel-light);
+  background: var(--console-button);
+  color: var(--console-button-ink);
+}
+.candy.tall-reels .cabinet-controls .spin-button { border-radius: 18px; }
+.dragon.tall-reels .cabinet-controls .spin-button {
+  box-shadow: inset 0 0 0 2px #d8c08188, 0 4px 0 #3f5731;
+}
+.tall-reels .slot-cabinet .reels { gap: clamp(3px, .65vw, 8px); }
+.tall-reels .slot-cabinet .reel {
+  height: calc(6 * var(--cell-height) + 2px);
+  border-color: var(--reel-border);
+  border-radius: 7px;
+  background: var(--reel-glass);
+  box-shadow: inset 0 1px 10px #0009;
+}
+.tall-reels .reel-strip { grid-template-rows: repeat(6, minmax(0, 1fr)); }
+.tall-reels .reel.spinning .reel-strip { grid-template-rows: repeat(18, minmax(0, 1fr)); }
+.tall-reels .cell { border: 0; box-shadow: inset 0 -1px var(--reel-divider); }
+.tall-reels .cell:last-child { box-shadow: none; }
+.tall-reels .cell:nth-child(even) { background: #ffffff06; }
+.cosmic.tall-reels .cell::before {
+  content: '';
+  position: absolute;
+  inset: 4px 6px;
+  border-inline: 1px solid #8ec9ff18;
+  pointer-events: none;
+}
+.candy.tall-reels .cell::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 8px;
+  background: linear-gradient(155deg, #ffc3d518, transparent 54%, #b4588c18);
+  pointer-events: none;
+}
+.dragon.tall-reels .cell::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  background: repeating-linear-gradient(120deg, transparent 0 6px, #c9b46e08 6px 7px);
+  pointer-events: none;
+}
+.tall-reels .cell .reel-symbol {
+  width: min(84%, calc(var(--cell-height) * .87));
+  height: auto;
+  aspect-ratio: 1;
+}
+.tall-reels .symbol-caption { font-size: clamp(7px, 1.1vw, 12px); }
+
+.tall-reels .cell.winning, .tall-reels .cell.line-cell {
+  background: color-mix(in srgb, var(--reel-light) 13%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--reel-light) 47%, transparent);
+}
+.tall-reels .cell.scatter-triggered {
+  background: #edc87d25;
+  box-shadow: inset 0 0 0 1px #e6c77b;
+}
+.tall-reels .cell:is(.winning, .line-cell)::after {
+  content: '';
+  position: absolute;
+  inset: auto 18% 2px;
+  height: 3px;
+  border-radius: 8px;
+  background: var(--reel-trim);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--reel-light) 48%, transparent);
+  pointer-events: none;
+}
+.tall-reels .cell.line-cell {
+  box-shadow: inset 0 0 0 1px var(--reel-light);
+}
+.tall-reels .inspecting-line .cell.winning:not(.line-cell) { opacity: .57; }
+.tall-reels .cell.winning .reel-symbol {
+  animation: tall-symbol-light .45s ease-out both;
+}
+@keyframes tall-symbol-light {
+  from { filter: drop-shadow(0 0 10px var(--reel-light)); }
+  to { filter: drop-shadow(0 3px 4px #0008); }
+}
+
+.payline-picker {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px 0 0;
+}
+.payline-picker button {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  min-width: 50px;
+  min-height: 42px;
+  padding: 4px 6px;
+  border: 1px solid var(--reel-divider);
+  border-radius: 5px;
+  background: #09081388;
+  color: #f4eef8;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+.payline-picker button:is(:hover, :focus-visible, [aria-pressed='true']) {
+  border-color: var(--reel-light);
+  background: color-mix(in srgb, var(--reel-light) 20%, #090813);
+}
+.payline-picker button b { color: var(--reel-light); }
+.payline-thumbnail {
+  display: grid;
+  grid-template-columns: repeat(5, 3px);
+  grid-template-rows: repeat(var(--map-rows), 2px);
+  gap: 1px;
+  align-content: center;
+}
+.payline-thumbnail i { background: var(--reel-light); border-radius: 1px; }
+
+@media (max-width: 650px) {
+  .tall-reels .stage-art { object-position: 54% top; }
+  .tall-reels .stage-art-detail { display: none; }
+  .tall-reels .slot-cabinet { filter: drop-shadow(0 8px 12px #0008); }
+  .tall-reels .cabinet-controls { gap: 5px; }
+  .tall-reels .cabinet-controls .bet-stepper { min-width: 0; }
+  .tall-reels .cabinet-controls .game-stat strong { font-size: clamp(12px, 4vw, 16px); }
+  .tall-reels .slot-cabinet .reel { border-radius: 4px; }
+  .payline-picker button { min-width: 44px; min-height: 44px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tall-reels .cell.winning .reel-symbol { animation: none; }
+}

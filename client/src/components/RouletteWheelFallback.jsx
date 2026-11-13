@@ -1,3 +1,4 @@
+import { useLanguage } from '../LanguageContext.jsx';
 import {memo,useId} from 'react';
 import {WHEEL,numberColor} from '../lib/roulette.js';
 
@@ -33,9 +34,10 @@ const WheelFace=memo(function WheelFace(){
 });
 
 export default function RouletteWheel({angles,spinning,duration,number}){
-  return <div className={'roulette-wheel-scene '+(spinning?'is-spinning':'')} role="img" aria-label={spinning?'Roulette wheel and ball spinning':number===null?'European roulette wheel with 37 pockets':`Ball settled on ${number}`} style={{'--roll-time':duration+'ms'}}>
+  const { t } = useLanguage();
+  return <div className={'roulette-wheel-scene '+(spinning?'is-spinning':'')} role="img" aria-label={spinning?t("Roulette wheel and ball spinning"):number===null?t("European roulette wheel with 37 pockets"):t('Ball settled on {0}', number)} style={{'--roll-time':duration+'ms'}}>
     <div className="roulette-wheel-shadow"/><div className="roulette-wheel-perspective"><div className="roulette-rotor" style={{transform:`rotate(${angles.wheel}deg)`}}><WheelFace/></div>
       <div className="roulette-ball-orbit" style={{transform:`rotate(${angles.ball}deg)`}}><span className="roulette-ball"/></div><div className="roulette-wheel-reflection"/>
-    </div><div className="roulette-wheel-plaque"><span>RIVIERA</span><small>EUROPEAN · SINGLE ZERO</small></div>
+    </div><div className="roulette-wheel-plaque"><span>RIVIERA</span><small>{t("EUROPEAN · SINGLE ZERO")}</small></div>
   </div>;
 }

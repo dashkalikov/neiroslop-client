@@ -4,16 +4,16 @@
 .sidebar .space-label { margin-top:5px; letter-spacing:2.2px; font-size:6px; }
 .featured-carousel .hero-image { animation:featured-image-in .65s ease-out; }
 .featured-carousel .hero-content { padding-left:70px; padding-right:70px; }
-.featured-carousel .hero-pages { left:50%; right:auto; bottom:17px; transform:translateX(-50%); display:flex; align-items:center; gap:4px; z-index:5; padding:1px 9px; border:1px solid #ffffff2e; border-radius:20px; background:#071321a6; backdrop-filter:blur(10px); }
+.featured-carousel .hero-pages { left:50%; right:auto; bottom:17px; transform:translateX(-50%); display:flex; align-items:center; gap:4px; z-index:5; padding:1px 9px; border:1px solid #ffffff2e; border-radius:20px; background:#111725f2; backdrop-filter:blur(10px); }
 .featured-carousel .hero-pages button { position:relative; width:19px; height:23px; border:0; padding:0; background:transparent; border-radius:4px; opacity:1; }
-.featured-carousel .hero-pages button:after { content:''; display:block; width:13px; height:3px; background:#ffffff55; border-radius:4px; transition:background .2s,width .2s; }
+.featured-carousel .hero-pages button:after { content:''; display:block; width:13px; height:3px; background:#a29ab4; border-radius:4px; transition:background .2s,width .2s; }
 .featured-carousel .hero-pages button.selected:after { width:18px; background:#ffe5be; box-shadow:0 0 9px #ffe6ba44; }
-.hero-arrow { display:grid; place-items:center; position:absolute; z-index:6; top:50%; transform:translateY(-50%); width:40px; height:48px; border:1px solid #ffffff4d; border-radius:22px; background:#11182455; color:#fff4ea; backdrop-filter:blur(10px); box-shadow:0 3px 15px #0002; }
-.hero-arrow:hover { background:#ffffff26; border-color:#fffc; box-shadow:0 0 22px #ffe0c51f; }.hero-arrow:active { background:#ffffff3b; }
+.hero-arrow { display:grid; place-items:center; position:absolute; z-index:6; top:50%; transform:translateY(-50%); width:40px; height:48px; border:1px solid #ffffff4d; border-radius:22px; background:#221a2cf2; color:#fff4ea; backdrop-filter:blur(10px); box-shadow:0 3px 15px #0002; }
+.hero-arrow:hover { background:#382b43; border-color:#fffc; box-shadow:0 0 22px #ffe0c51f; }.hero-arrow:active { background:#4a3658; }
 .hero-arrow svg { width:19px; height:19px; }.hero-previous { left:11px; }.hero-next { right:11px; }.hero-previous svg { transform:rotate(180deg); }
 .hero-rotation-tools { position:absolute; z-index:6; right:18px; bottom:16px; display:flex; align-items:center; gap:11px; color:#f9eaf6; font-size:8px; font-variant-numeric:tabular-nums; letter-spacing:1.2px; text-shadow:0 1px 4px #07101f; }
-.hero-rotation-tools>button { display:grid; place-items:center; width:28px; height:28px; border:1px solid #ffffff44; background:#15162966; border-radius:50%; color:#ffedd8; backdrop-filter:blur(8px); }
-.hero-rotation-tools svg { width:12px; height:12px; }.hero-rotation-tools>button:hover { background:#ffffff26; }
+.hero-rotation-tools>button { display:grid; place-items:center; width:28px; height:28px; border:1px solid #ffffff44; background:#221a2cf2; border-radius:50%; color:#ffedd8; backdrop-filter:blur(8px); }
+.hero-rotation-tools svg { width:12px; height:12px; }.hero-rotation-tools>button:hover { background:#382b43; }
 .featured-carousel .hero-game-label { bottom:57px; right:30px; }
 .featured-carousel button:focus-visible { outline:2px solid #fff0bc; outline-offset:4px; }
 @keyframes featured-image-in { from{opacity:.35;transform:scale(1.025)}to{opacity:1;transform:scale(1)} }

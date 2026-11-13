@@ -1,0 +1,194 @@
+.account-tabs { flex-wrap: wrap; }
+
+.wallet-gift {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+.wallet-gift > svg { width: 24px; height: 24px; color: var(--active-text); }
+.wallet-gift p { margin: 5px 0 0; color: var(--muted); }
+
+.achievement-collection { margin-top: 30px; }
+.sticker-collection-header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin-bottom: 16px;
+}
+.sticker-collection-header h3 {
+  margin: 0 0 5px;
+  font: 550 clamp(24px, 3vw, 34px) / 1.12 var(--heading, Georgia), Georgia, serif;
+}
+.sticker-collection-header p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.sticker-collection-header > span {
+  padding: 7px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--active-text);
+  background: var(--soft);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.achievement-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 164px), 1fr));
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.achievement-sticker {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--surface);
+}
+.achievement-sticker[data-status="ready"] { border-color: color-mix(in srgb, var(--active-text) 54%, var(--border)); }
+
+.sticker-reveal {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  justify-items: center;
+  width: 100%;
+  min-width: 0;
+  padding: 5px 5px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background-color: var(--soft);
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--muted) 22%, transparent) 0.6px, transparent 1px);
+  background-size: 9px 9px;
+  cursor: default;
+}
+.achievement-sticker[data-status="ready"] .sticker-reveal {
+  background-color: var(--active);
+  color: var(--active-text);
+  cursor: pointer;
+}
+.sticker-reveal:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.sticker-stage {
+  position: relative;
+  display: block;
+  width: min(100%, 142px);
+  aspect-ratio: 1;
+  isolation: isolate;
+  transform: rotate(-4deg);
+  transition: transform 160ms ease;
+}
+.achievement-sticker:nth-child(2n) .sticker-stage { transform: rotate(4deg); }
+.achievement-sticker[data-status="ready"] .sticker-reveal:is(:hover, :focus-visible) .sticker-stage { transform: translateY(-3px) rotate(0); }
+.sticker-illustration, .sticker-paper, .sticker-peeling-film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.sticker-illustration {
+  object-fit: contain;
+  filter: drop-shadow(0 4px 4px #100a203d);
+}
+.sticker-paper {
+  mask: var(--sticker-image) center / contain no-repeat;
+  background:
+    linear-gradient(225deg, #b98857 0 16%, #fae6c2 21%, #fff9e9 24%, #d9b184 26%, transparent 33%),
+    radial-gradient(ellipse at 26% 22%, #fff9e7, transparent 64%),
+    repeating-linear-gradient(107deg, #8a5c3624 0 .6px, transparent 1.1px 4px),
+    repeating-linear-gradient(21deg, transparent 0 2px, #fffaf062 3px 4px),
+    linear-gradient(145deg, #faebce, #efdbb4 61%, #d6b288);
+  box-shadow: inset 0 0 16px #7a422d36;
+}
+.achievement-sticker[data-status="ready"] .sticker-paper {
+  filter: brightness(1.06);
+}
+@property --sticker-peel {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 0%;
+}
+.sticker-peeling-film {
+  z-index: 2;
+  mask-image: linear-gradient(225deg, transparent calc(var(--sticker-peel) - 2%), #000 var(--sticker-peel));
+  animation: sticker-peel 880ms cubic-bezier(.24,.51,.4,1) both;
+}
+.sticker-peeling-film .sticker-paper {
+  background:
+    linear-gradient(225deg,
+      #ad7950 calc(var(--sticker-peel) - 2%),
+      #fffaf0 calc(var(--sticker-peel) + 2%),
+      #fae8c6 calc(var(--sticker-peel) + 6%),
+      #98613b85 calc(var(--sticker-peel) + 9%),
+      transparent calc(var(--sticker-peel) + 13%)),
+    radial-gradient(ellipse at 26% 22%, #fff9e7, transparent 64%),
+    repeating-linear-gradient(107deg, #8a5c3624 0 .6px, transparent 1.1px 4px),
+    linear-gradient(145deg, #faebce, #efdbb4 61%, #d6b288);
+}
+.achievement-sticker[data-revealing="true"] .sticker-illustration {
+  animation: sticker-press 460ms 400ms cubic-bezier(.18,.82,.35,1) both;
+}
+@keyframes sticker-peel {
+  0% { --sticker-peel: 0%; transform: none; }
+  20% { --sticker-peel: 29%; transform: translate(1%, -2%) rotate(2deg); }
+  66% { --sticker-peel: 67%; transform: translate(3%, -5%) rotate(5deg); }
+  100% { --sticker-peel: 105%; transform: translate(10%, -13%) rotate(9deg); }
+}
+@keyframes sticker-press {
+  0% { transform: scale(1.06) rotate(-3deg); filter: drop-shadow(2px 9px 7px #100a2055); }
+  64% { transform: scale(.96) rotate(1deg); }
+  82% { transform: scale(1.018); }
+  100% { transform: scale(1); }
+}
+
+.sticker-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 19px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.2;
+  text-align: center;
+}
+.sticker-state svg { width: 13px; height: 13px; flex: 0 0 auto; }
+.achievement-sticker[data-status="ready"] .sticker-state,
+.achievement-sticker[data-status="claimed"] .sticker-state { color: var(--active-text); font-weight: 700; }
+.sticker-details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 11px 2px 1px;
+}
+.sticker-details h4 { margin: 0; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
+.sticker-details p { margin: 5px 0 10px; color: var(--muted); font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+.sticker-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+.achievement-progress { display: grid; flex: 1 1 60px; gap: 4px; min-width: 0; }
+.achievement-progress progress { width: 100%; height: 5px; accent-color: var(--active-text); }
+.achievement-progress span { color: var(--muted); font-size: 10px; white-space: nowrap; }
+.sticker-footer strong { font-size: 11px; color: var(--active-text); white-space: nowrap; }
+
+.wallet-transaction-amount { text-align: right; }
+.wallet-transactions { margin-top: 28px; }
+@media (max-width: 560px) {
+  .wallet-gift > button { grid-column: 2; justify-self: start; }
+  .achievement-list { grid-template-columns: repeat(auto-fit, minmax(min(100%, 120px), 1fr)); gap: 9px; }
+  .achievement-sticker { padding: 8px; }
+  .sticker-details { padding-inline: 1px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sticker-stage { transition: none; }
+  .achievement-sticker[data-revealing="true"] .sticker-illustration { animation: none; }
+  .sticker-peeling-film { animation-duration: 1ms; }
+}

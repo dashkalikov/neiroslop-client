@@ -1,0 +1,58 @@
+.account-access {
+  max-width: none;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: clamp(16px, 4vw, 40px);
+  color: var(--text);
+  font-family: var(--font, system-ui), sans-serif;
+  outline: none;
+}
+.account-access-panel {
+  width: min(100%, 480px);
+  min-width: 0;
+  padding: clamp(22px, 4vw, 38px);
+  border: 1px solid color-mix(in srgb, var(--border) 70%, #cbb1d9);
+  border-radius: 24px;
+  background: var(--surface);
+  box-shadow: 0 24px 75px #14092180;
+}
+.account-access-panel .language-settings {
+  flex-wrap: wrap;
+  margin: 0 0 22px;
+}
+.account-access-panel .language-settings h3 { font-size: 13px; }
+.account-access-panel .security-kicker { display: none; }
+.account-access-title {
+  margin: 0;
+  color: var(--text);
+  font: 500 clamp(28px, 4vw, 41px) / 1.08 var(--heading, Georgia), Georgia, serif;
+}
+.account-access-panel .security-form { max-width: none; }
+.account-access-panel .security-form fieldset { gap: 12px; }
+.account-access-panel .security-switch { display: flex; width: 100%; }
+.account-access-panel .security-switch button { flex: 1 1 auto; }
+.account-access-panel .security-actions .primary-button { flex: 1 1 auto; }
+.account-access-panel .security-factor-note {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  margin: 16px 0 0;
+  font-size: 12px;
+}
+.security-factor-note svg { width: 15px; height: 15px; flex: 0 0 auto; color: var(--active-text); }
+.security-onboarding-skip { margin-top: 18px; min-height: 36px; color: var(--active-text); text-decoration: underline; text-underline-offset: 3px; }
+.access-offline { margin-bottom: 18px; }
+.access-offline p { margin: 0 0 10px; color: var(--muted); }
+.avatar-settings input[hidden] { display: none; }
+.player-avatar-image { display: block; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; }
+.avatar-settings-row { display: flex; align-items: center; flex-wrap: wrap; gap: 14px; }
+.avatar-settings-row .account-avatar { margin: 0; width: 58px; height: 58px; font-size: 25px; }
+.avatar-settings-row .security-actions { margin: 0; }
+.account-credentials { margin: 0 0 28px; }
+@media (max-width: 650px) {
+  .account-access-panel { border-radius: 19px; }
+}

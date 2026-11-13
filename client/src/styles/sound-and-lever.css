@@ -2,11 +2,12 @@
 .global-audio-controls .audio-toggle { width:27px; height:27px; display:grid; place-items:center; color:var(--muted); border-radius:5px; }
 .global-audio-controls .audio-toggle[aria-pressed="true"] { color:var(--active-text); background:var(--active); }
 .global-audio-controls .audio-toggle svg { width:16px; height:16px; }
-.volume-control { display:flex; align-items:center; gap:8px; color:var(--muted); }
-.volume-control input { appearance:none; -webkit-appearance:none; width:75px; height:4px; padding:0; border:0; border-radius:5px; cursor:pointer; background:linear-gradient(90deg,#bb99dd var(--volume-fill),var(--border) var(--volume-fill)); }
-.volume-control input::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:12px; height:12px; border-radius:50%; border:2px solid #e6d2f8; background:#b48bd8; box-shadow:0 1px 4px #0003; }
-.volume-control input::-moz-range-thumb { width:10px; height:10px; border-radius:50%; border:2px solid #e6d2f8; background:#b48bd8; }
-.volume-control input:focus-visible { outline:2px solid #c5a8e4; outline-offset:6px; }
+.volume-control { --slider-accent:#c5a4e4; --slider-rail:#9185a3; display:flex; align-items:center; gap:8px; color:var(--muted); }
+[data-theme="light"] .volume-control { --slider-accent:#7552a4; --slider-rail:#7e8596; }
+.volume-control input { appearance:none; -webkit-appearance:none; width:75px; height:4px; padding:0; border:0; border-radius:5px; cursor:pointer; background:linear-gradient(90deg,var(--slider-accent) var(--volume-fill),var(--slider-rail) var(--volume-fill)); }
+.volume-control input::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:12px; height:12px; border-radius:50%; border:2px solid #e6d2f8; background:var(--slider-accent); box-shadow:0 1px 4px #0003; }
+.volume-control input::-moz-range-thumb { width:10px; height:10px; border-radius:50%; border:2px solid #e6d2f8; background:var(--slider-accent); }
+.volume-control input:focus-visible { outline:2px solid var(--focus-ring); outline-offset:6px; }
 .volume-control output { min-width:30px; text-align:right; font-variant-numeric:tabular-nums; font-size:9px; }
 .settings-sound-section { margin-top:19px; padding-top:17px; border-top:1px solid var(--border); }
 .settings-sound-section .settings-section-heading { margin-bottom:14px; }

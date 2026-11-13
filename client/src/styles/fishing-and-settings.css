@@ -1,8 +1,8 @@
-/* App-wide scenery is independent of the black/white appearance choice. */
+/* A shallow scrim leaves the photo visible. Content panels carry text contrast. */
 .app-shell { isolation:isolate; }
 .app-wallpaper { position:fixed; inset:0; z-index:-1; background-position:center; background-size:cover; pointer-events:none; }
-.app-wallpaper:after { content:''; position:absolute; inset:0; background:linear-gradient(180deg,#07101c92,#090d18bd 75%); }
-[data-theme="light"] .app-wallpaper:after { background:linear-gradient(180deg,#f8fafc9e,#f8fafcc4 75%); }
+.app-wallpaper:after { content:''; position:absolute; inset:0; background:linear-gradient(155deg,#07101c26,#090d1854 85%); }
+[data-theme="light"] .app-wallpaper:after { background:linear-gradient(155deg,#f8fafc14,#f8fafc3b 85%); }
 .has-wallpaper { --wallpaper-panel:#11151df5; --wallpaper-edge:#ffffff24; --muted:#c0c6d2; --active:#352943; --active-text:#f0dcff; }
 [data-theme="light"] .has-wallpaper { --wallpaper-panel:#fffffff5; --wallpaper-edge:#26334b29; --muted:#505968; --active:#ede2fc; --active-text:#542980; }
 .has-wallpaper .sidebar,.has-wallpaper .topbar { background:var(--wallpaper-panel); backdrop-filter:blur(22px); }
@@ -10,14 +10,16 @@
 .has-wallpaper .welcome { padding:20px 22px; }
 .has-wallpaper .perks { padding:22px 10px; margin-top:22px; }
 .has-wallpaper .games-section { padding:24px 22px 22px; }
-.has-wallpaper .app-footer { margin:25px 42px; padding:18px 22px; max-width:1416px; }
+.has-wallpaper .app-footer {
+  width:calc(100% - 2 * var(--content-gutter));
+  max-width:calc(var(--content-width) - 2 * var(--content-gutter));
+  margin:25px auto;
+  padding:18px 22px;
+}
 .has-wallpaper :is(.eyebrow,.collection-eyebrow,.game-story .eyebrow) { color:var(--muted); }
 .has-wallpaper :is(.filter.active,.nav-item.active) { border:1px solid var(--wallpaper-edge); }
-.has-wallpaper .game-card .card-info { padding:11px 10px 0; border-radius:0; background:var(--surface); margin-top:0; }
-.has-wallpaper .game-card .card-meta { margin:0; padding:10px; background:var(--surface); border-radius:0 0 10px 10px; }
 .has-wallpaper .game-story { padding:22px; }
-@media(max-width:900px) { .has-wallpaper .app-footer { margin-left:28px; margin-right:28px; } }
-@media(max-width:650px) { .has-wallpaper .welcome { padding:17px 14px; }.has-wallpaper .perks { padding:17px 12px; }.has-wallpaper .games-section { padding:19px 12px 15px; }.has-wallpaper .app-footer { margin:22px 17px; padding:15px 13px; }.has-wallpaper .games-section .filter { padding:8px 5px; }.has-wallpaper .games-section .filters { gap:2px; } }
+@media(max-width:650px) { .has-wallpaper .welcome { padding:17px 14px; }.has-wallpaper .perks { padding:17px 12px; }.has-wallpaper .games-section { padding:19px 12px 15px; }.has-wallpaper .app-footer { margin-block:22px; padding:15px 13px; }.has-wallpaper .games-section .filter { padding:8px 5px; }.has-wallpaper .games-section .filters { gap:2px; } }
 .settings-button { width:33px; height:33px; display:grid; place-items:center; border:1px solid var(--border); border-radius:7px; color:var(--muted); background:var(--soft); }
 .settings-button svg { width:17px; height:17px; }.settings-button:hover { color:var(--text); border-color:#a688c8; }
 .appearance-nav { margin-top:4px; }

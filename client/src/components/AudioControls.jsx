@@ -1,3 +1,4 @@
+import { useLanguage } from '../LanguageContext.jsx';
 import {useId} from 'react';
 import {useLounge} from '../LoungeContext.jsx';
 import {getSoundtrack, SOUNDTRACKS} from '../lib/audio-preferences.js';
@@ -22,6 +23,7 @@ const volumeControls = [
 ];
 
 export function SoundSettings() {
+  const { t } = useLanguage();
   const { sound, setSound, audioPreferences, setAudioPreference } = useLounge();
   const track = getSoundtrack(audioPreferences.soundtrack);
   const id = useId();
@@ -29,36 +31,37 @@ export function SoundSettings() {
   return <section className="settings-sound-section" aria-labelledby={`${id}-heading`}>
     <div className="settings-section-heading">
       <div>
-        <h3 id={`${id}-heading`}>Music &amp; sound</h3>
-        <p>Set separate levels for music, game effects, and win sounds.</p>
+        <h3 id={`${id}-heading`}>{t("Music & sound")}</h3>
+        <p>{t("Set separate levels for music, game effects, and win sounds.")}</p>
       </div>
       <button type="button" className={`settings-sound-toggle ${sound ? 'active' : ''}`}
         onClick={() => setSound(!sound)} aria-pressed={sound}
-        aria-label={sound ? 'Mute music and sound' : 'Enable music and sound'}>
-        <Icon name={sound ? 'volume' : 'mute'} />{sound ? 'Audio on' : 'Audio off'}
+        aria-label={sound ? t("Mute music and sound") : t("Enable music and sound")}>
+        <Icon name={sound ? 'volume' : 'mute'} />{sound ? t("Audio on") : t("Audio off")}
       </button>
     </div>
     <div className="settings-audio-mix">
-      {volumeControls.map(([key, label]) => <VolumeSlider key={key} label={label}
+      {volumeControls.map(([key, label]) => <VolumeSlider key={key} label={t(label)}
         value={audioPreferences[key]} onChange={value => setAudioPreference(key, value)} />)}
     </div>
     <div className="soundtrack-choice">
       <div>
-        <label htmlFor={`${id}-track`}>Background track</label>
-        <p id={`${id}-description`}>{track.description}</p>
+        <label htmlFor={`${id}-track`}>{t("Background track")}</label>
+        <p id={`${id}-description`}>{t(track.description)}</p>
       </div>
       <select id={`${id}-track`} aria-describedby={`${id}-description`} value={track.id}
         onChange={event => setAudioPreference('soundtrack', event.target.value)}>
-        {SOUNDTRACKS.map(item => <option key={item.id} value={item.id}>{item.title}</option>)}
+        {SOUNDTRACKS.map(item => <option key={item.id} value={item.id}>{t(item.title)}</option>)}
       </select>
     </div>
   </section>;
 }
 
 export default function AudioControls(){
+  const { t } = useLanguage();
   const { sound, setSound, audioPreferences: { volume }, setAudioPreference } = useLounge();
   return <div className="global-audio-controls">
-    <button className="icon-button audio-toggle" onClick={()=>setSound(!sound)} aria-label={sound?'Mute audio':'Enable audio'} aria-pressed={sound} title={sound?'Mute music and effects':'Play music and effects'}><Icon name={sound&&volume>0?'volume':'mute'}/></button>
-    <VolumeSlider header label="Audio volume" value={volume} onChange={value => setAudioPreference('volume', value)} />
+    <button className="icon-button audio-toggle" onClick={()=>setSound(!sound)} aria-label={sound?t("Mute audio"):t("Enable audio")} aria-pressed={sound} title={sound?t("Mute music and effects"):t("Play music and effects")}><Icon name={sound&&volume>0?'volume':'mute'}/></button>
+    <VolumeSlider header label={t('Audio volume')} value={volume} onChange={value => setAudioPreference('volume', value)} />
   </div>;
 }
